@@ -48,20 +48,17 @@ docker-compose up -d
 text
 
 RisingSun-Server/
-├── .env                    # ⚠️  Обязательный файл окружения
+├── .env                    # ⚠️  Обязательный файл окружения (создать!)
 ├── .env-example           # 📋 Пример конфигурации
 ├── docker-compose.yml     # 🐳 Конфигурация Docker
-└── ...                    # Исходный код приложения
-
-🔧 Технологии
-
-    Backend: Java Spring Boot
-
-    Containerization: Docker
-
-    Orchestration: Docker Compose
-
-    Registry: Docker Hub
+├── src/                   # 📁 Исходный код приложения
+│   ├── main/
+│   │   ├── java/          # 🖥️  Java классы
+│   │   └── resources/     # ⚙️  Ресурсы приложения
+│   └── test/              # 🧪 Тесты
+├── target/                # 🏗️  Скомпилированные файлы
+├── pom.xml               # 📦 Maven конфигурация
+└── README.md             # 📚 Документация
 
 📞 Поддержка
 
