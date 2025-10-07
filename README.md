@@ -48,7 +48,7 @@ docker-compose up -d
 text
 
 RisingSun-Server/
-├── .env                    # ⚠️  Обязательный файл окружения (создать!)
+├── .env                    # ⚠️  Обязательный файл окружения (создать!)\n
 ├── .env-example           # 📋 Пример конфигурации
 ├── docker-compose.yml     # 🐳 Конфигурация Docker
 ├── src/                   # 📁 Исходный код приложения
