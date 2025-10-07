@@ -1,0 +1,40 @@
+server:
+  port: 8080
+
+spring:
+  config:
+    activate:
+      on-profile: "docker"
+
+  application:
+    name: MyMessenger
+
+  datasource:
+      url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/messenger_db}
+      username: ${SPRING_DATASOURCE_USERNAME:postgres}
+      password: ${SPRING_DATASOURCE_PASSWORD:defaultpass}
+      driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: ${SPRING_JPA_DDL_AUTO:validate}
+    properties:
+      hibernate:
+        format_sql: ${HIBERNATE_FORMAT_SQL:false}
+    show-sql: ${SPRING_JPA_SHOW_SQL:false}
+
+  # Автоматическое создание схемы
+  sql:
+    init:
+      mode: always
+
+app:
+  messenger:
+    max-message-size: ${APP_MESSENGER_MAX_MESSAGE_SIZE:5000}
+    allow-anonymous: ${APP_MESSENGER_ALLOW_ANONYMOUS:false}
+
+logging:
+  level:
+    com.f4ture_is_here: ${LOGGING_LEVEL_COM_F4TURE_IS_HERE:INFO}
+    org.hibernate.SQL: ${LOGGING_LEVEL_ORG_HIBERNATE_SQL:WARN}
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN

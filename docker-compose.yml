@@ -1,0 +1,52 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: risingsun-postgres
+    environment:
+      POSTGRES_DB: messenger_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d messenger_db"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - risingsun-net
+
+  app:
+    image: superplushkin/risingsun-server:1.0.0
+    container_name: risingsun-app
+    pull_policy: always
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/messenger_db
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_PROFILES_ACTIVE: docker,prod
+      SERVER_PORT: 8080
+      LOGGING_LEVEL_COM_F4TURE_IS_HERE: INFO
+      LOGGING_LEVEL_ORG_HIBERNATE_SQL: WARN
+      APP_MESSENGER_MAX_MESSAGE_SIZE: 5000
+      APP_MESSENGER_ALLOW_ANONYMOUS: false
+    ports:
+      - "8081:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - risingsun-net
+
+volumes:
+  postgres_data:
+
+networks:
+  risingsun-net:
+    driver: bridge

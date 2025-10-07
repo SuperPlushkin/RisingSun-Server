@@ -1,0 +1,26 @@
+# Файлы, сгенерированные сборщиками (Maven, Gradle)
+target/
+build/
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# Файлы IDE
+.idea/
+*.iws
+*.iml
+*.ipr
+.vscode/
+*.swp
+*.swo
+
+# Логи
+*.log
+
+# Файлы операционных систем
+.DS_Store
+Thumbs.db
+
+# Файлы окружения (никогда не коммитьте пароли и ключи!)
+.env
+*.key
+*.cert
