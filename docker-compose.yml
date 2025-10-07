@@ -21,7 +21,7 @@ services:
       - risingsun-net
 
   app:
-    image: superplushkin/risingsun-server:1.0.0
+    image: superplushkin/risingsun-server:latest #НАДО ЗАМЕНИТЬ НА ВЕРСИЮ ДЛЯ ТЕСТОВ
     container_name: risingsun-app
     pull_policy: always
     environment:
