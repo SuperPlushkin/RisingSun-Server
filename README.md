@@ -18,10 +18,12 @@
 ### Запуск приложения
 
 1. **Скачайте Docker образ:**
+
    ```bash
    docker pull superplushkin/risingsun-server
    ```
 2. **Запустите приложение:**
+
    ```bash
    docker-compose up -d
    ```
