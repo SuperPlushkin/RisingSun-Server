@@ -53,17 +53,20 @@
 
 ```
 RisingSun-Server/
-├── .env                    # ⚠️  Обязательный файл окружения (создать!)
-├── .env-example           # 📋 Пример конфигурации
-├── docker-compose.yml     # 🐳 Конфигурация Docker
-├── src/                   # 📁 Исходный код приложения
-│   ├── main/
-│   │   ├── java/          # 🖥️  Java классы
-│   │   └── resources/     # ⚙️  Ресурсы приложения
-│   └── test/              # 🧪 Тесты
-├── target/                # 🏗️  Скомпилированные файлы
-├── pom.xml               # 📦 Maven конфигурация
-└── README.md             # 📚 Документация
+├── .gradle/              # 🛠️  Кэш Gradle
+├── gradle/wrapper/       # 📦 Gradle Wrapper файлы
+├── src/                  # 📁 Исходный код приложения
+├── .dockerignore         # 🐳 Исключения для Docker
+├── .env-example          # 📋 Пример конфигурации окружения
+├── .gitignore            # 🔒 Игнорируемые файлы Git
+├── Dockerfile            # 🐳 Конфигурация Docker образа
+├── DocumentationAPI.html # 📚 Документация API
+├── build.gradle.kts      # ⚙️ Конфигурация сборки Gradle
+├── docker-compose.yml    # 🐳 Компоновка Docker сервисов
+├── gradlew               # 🐧 Linux/Mac скрипт Gradle Wrapper
+├── gradlew.bat           # 🪟 Windows скрипт Gradle Wrapper
+├── init.sql              # 🗃️  SQL скрипт инициализации БД
+└── settings.gradle.kts   # ⚙️  Настройки проекта Gradle
 ```
 
 **Приятного использования! ✨**
