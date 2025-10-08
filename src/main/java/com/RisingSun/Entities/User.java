@@ -1,8 +1,10 @@
 package com.RisingSun.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -21,22 +23,20 @@ public class User {
     @Column(nullable = false)
     @NotBlank(message = "Password is required")
     @Size(min = 6, message = "Password must be at least 6 characters")
+    @JsonIgnore
     private String password;
-
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
 
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
 
+    @Column(name = "created_at", updatable = false, nullable = false)
+    private LocalDateTime createdAt;
+
     private boolean enabled = true;
 
 
-    public User() {
-        this.createdAt = LocalDateTime.now();
-    }
+    public User() { }
     public User(String username, String password) {
-        this();
         this.username = username;
         this.password = password;
     }
@@ -51,7 +51,11 @@ public class User {
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
+    public LocalDateTime getCreationDate() { return createdAt; }
+    @PrePersist
+    protected void setCreationDate() {
+        this.createdAt = LocalDateTime.now();
+    }
 
     public LocalDateTime getLastLogin() { return lastLogin; }
     public void setLastLogin(LocalDateTime lastLogin) { this.lastLogin = lastLogin; }

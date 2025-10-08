@@ -1,5 +1,6 @@
 package com.RisingSun.Controllers;
 
+import com.RisingSun.DTO.LoginRequest;
 import com.RisingSun.JWT.JwtUtil;
 import com.RisingSun.Entities.User;
 import com.RisingSun.Services.AuthService;
@@ -35,8 +36,7 @@ public class AuthController {
             if ("User already exists".equals(result)) {
                 return ResponseEntity.badRequest().body("User already exists");
             }
-
-            return ResponseEntity.ok("User registered successfully");
+            else return ResponseEntity.ok("User registered successfully");
 
         }
         catch (Exception e)
@@ -46,24 +46,15 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody User user) {
-        try
-        {
-            Optional<String> usernameOpt = authService.authenticateUser(
-                user.getUsername(),
-                user.getPassword()
-            );
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
 
-            if (usernameOpt.isPresent())
-            {
-                String token = jwtUtil.generateToken(usernameOpt.get());
-                return ResponseEntity.ok(token);
-            }
-            else return ResponseEntity.badRequest().body("Invalid credentials");
-        }
-        catch (Exception e)
+        Optional<String> username = authService.authenticateUser(request.getUsername(), request.getPassword());
+
+        if (username.isPresent())
         {
-            return ResponseEntity.badRequest().body("Login failed: " + e.getMessage());
+            String token = jwtUtil.generateToken(username.get());
+            return ResponseEntity.ok(token);
         }
+        else return ResponseEntity.badRequest().body("Invalid credentials");
     }
 }
