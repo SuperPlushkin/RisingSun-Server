@@ -1,6 +1,7 @@
 package com.RisingSun.Controllers;
 
 import com.RisingSun.DTO.LoginRequest;
+import com.RisingSun.DTO.RegisterRequest;
 import com.RisingSun.JWT.JwtUtil;
 import com.RisingSun.Entities.User;
 import com.RisingSun.Services.AuthService;
@@ -28,21 +29,14 @@ public class AuthController {
 
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@Valid @RequestBody User user) {
-        try
-        {
-            String result = authService.registerUser(user);
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
 
-            if ("User already exists".equals(result)) {
-                return ResponseEntity.badRequest().body("User already exists");
-            }
-            else return ResponseEntity.ok("User registered successfully");
+        String result = authService.registerUser(request.getUsername(), request.getPassword());
 
+        if (!"User already exists".equals(result)) {
+            return ResponseEntity.ok("User registered successfully");
         }
-        catch (Exception e)
-        {
-            return ResponseEntity.badRequest().body("Registration failed: " + e.getMessage());
-        }
+        else return ResponseEntity.badRequest().body("User already exists");
     }
 
     @PostMapping("/login")

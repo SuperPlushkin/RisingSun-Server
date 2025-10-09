@@ -23,7 +23,6 @@ public class DatabaseInitService implements CommandLineRunner {
     public void run(String... args) throws Exception {
         createDatabaseIfNotExists();
     }
-
     private void createDatabaseIfNotExists() {
         try
         {

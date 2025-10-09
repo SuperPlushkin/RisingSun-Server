@@ -6,6 +6,7 @@ public class MessageReadStatusId implements Serializable {
     private Long message;
     private Long user;
 
+    public MessageReadStatusId() {}
     public MessageReadStatusId(Long message, Long user) {
         this.message = message;
         this.user = user;

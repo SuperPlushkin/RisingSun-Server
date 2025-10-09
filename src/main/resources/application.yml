@@ -7,7 +7,10 @@ spring:
       on-profile: "docker"
 
   application:
-    name: MyMessenger
+    name: Server
+
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
 
   datasource:
       url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/messenger_db}
@@ -21,7 +24,9 @@ spring:
     properties:
       hibernate:
         format_sql: ${HIBERNATE_FORMAT_SQL:false}
+        hibernate.transaction.jta.platform: org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform # ЭТО ДО ТЕХ ПОР, ПОКА 1 БАЗА ДАННЫХ
     show-sql: ${SPRING_JPA_SHOW_SQL:false}
+    open-in-view: false
 
   # Автоматическое создание схемы
   sql:

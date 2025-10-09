@@ -22,7 +22,7 @@ public class Chat {
     private String name;
 
     @ManyToOne
-    @Column(nullable = false)
+    @JoinColumn(nullable = false)
     private User created_by;
 
     @Column(nullable = false)

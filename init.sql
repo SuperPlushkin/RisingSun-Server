@@ -1,16 +1,17 @@
 -- Создание таблицы пользователей
 CREATE TABLE users (
     id BIGSERIAL PRIMARY KEY,
-    username(32) VARCHAR NOT NULL UNIQUE
+    username(30) VARCHAR NOT NULL UNIQUE
         CHECK (
             char_length(username) >= 4 AND
             username ~ '^[a-zA-Z0-9_]+$'
         ),
-    password(50) VARCHAR NOT NULL
+    hash_password(64) VARCHAR NOT NULL
         CHECK (
             char_length(password) >= 8 AND
-            password ~ '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).+$'
-        ),,
+            password ~ '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$'
+        ),
+    last_login TIMESTAMP,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     enabled BOOLEAN NOT NULL DEFAULT TRUE,
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE
@@ -79,7 +80,7 @@ CREATE TABLE messages (
     chat_id BIGINT NOT NULL,
     text VARCHAR NOT NULL,
     sent_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    read_count BIGINT NOT NULL DEFAULT 0,
+    read_count BIGINT NOT NULL DEFAULT 0 CHECK (read_count >= 0),
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
     CONSTRAINT fk_message_sender FOREIGN KEY (sender_id) REFERENCES users(id),
     CONSTRAINT fk_message_chat FOREIGN KEY (chat_id) REFERENCES chats(id)

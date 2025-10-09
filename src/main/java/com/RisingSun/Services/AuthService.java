@@ -19,17 +19,8 @@ public class AuthService {
 
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public String registerUser(User user) {
-        if (userRepository.existsByUsername(user.getUsername())) {
-            return "User already exists";
-        }
-
-        String hashedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(hashedPassword);
-
-        userRepository.save(user);
-
-        return "User registered successfully";
+    public String registerUser(String username, String password) {
+        return userRepository.insertIfNotExists(username, passwordEncoder.encode(password)) ? "User registered successfully" : "User already exists";
     }
 
     public Optional<String> authenticateUser(String username, String password) {
@@ -38,7 +29,7 @@ public class AuthService {
         if (userOpt.isPresent()) {
             User user = userOpt.get();
 
-            if (passwordEncoder.matches(password, user.getPassword())) {
+            if (passwordEncoder.matches(password, user.getHashPassword())) {
                 userRepository.updateLastLogin(username, LocalDateTime.now());
                 return Optional.of(username);
             }

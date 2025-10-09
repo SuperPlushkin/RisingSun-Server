@@ -1,6 +1,5 @@
 package com.RisingSun.Entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -14,31 +13,30 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 32, nullable = false, unique = true)
-    @Size(min = 4, max = 32)
-    @Pattern(regexp = "^[a-zA-Z0-9_]+$", message = "Username must contain only letters, digits, and underscores")
+    @Column(length = 30, nullable = false, unique = true)
+    @Size(min = 4, max = 30, message = "Username must be between 4 and 30 characters")
+    @Pattern(
+        regexp = "^[a-zA-Z0-9_]+$",
+        message = "Username must contain only letters, digits, and underscores"
+    )
     private String username;
 
-    @Column(length = 50, nullable = false)
-    @Size(min = 8, max = 50)
-    @Pattern(
-        regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[\\W_]).+$",
-        message = "Password must contain at least one lowercase letter, one uppercase letter, one digit, and one special character"
-    )
-    @JsonIgnore
-    private String password;
+    @Column(length = 64, nullable = false)
+    @Size(message = "HashPassword must be 64 characters")
+    private String hash_password;
 
+    private LocalDateTime last_login;
     @Column(nullable = false)
     private LocalDateTime created_at;
     @Column(nullable = false)
-    private Boolean enabled;
+    private Boolean enabled = true;
     @Column(nullable = false)
-    private Boolean is_deleted;
+    private Boolean is_deleted = false;
 
-
-    public User(String username, String password) {
+    public User() {}
+    public User(String username, String hash_password) {
         this.username = username;
-        this.password = password;
+        this.hash_password = hash_password;
     }
 
     public Long getId() { return id; }
@@ -47,8 +45,8 @@ public class User {
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
 
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+    public String getHashPassword() { return hash_password; }
+    public void setHashPassword(String hash_password) { this.hash_password = hash_password; }
 
     public LocalDateTime getCreationDate() { return created_at; }
 
