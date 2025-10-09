@@ -1,27 +1,27 @@
 package com.RisingSun.Entities;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
-
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "login_history")
-public class LoginHistory {
+@Table(name = "chat_members")
+public class ChatMember {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "chat_id", nullable = false)
+    private Chat chat;
+
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @Column(nullable = false)
-    @Size(max = 45)
-    private String ip_address;
+    private LocalDateTime joined_at = LocalDateTime.now();
     @Column(nullable = false)
-    private String device_info;
+    private Boolean is_admin = false;
     @Column(nullable = false)
-    private LocalDateTime time = LocalDateTime.now();
-    @Column(nullable = false)
-    private Boolean success = false;
+    private Boolean is_deleted = false;
 }
