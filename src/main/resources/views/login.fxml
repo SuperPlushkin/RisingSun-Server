@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox spacing="20" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.RisingSun.Controllers.LoginController"
+      style="-fx-background-color: linear-gradient(to bottom, #667eea 0%, #764ba2 100%);">
+
+    <padding><Insets top="40" right="40" bottom="40" left="40"/></padding>
+
+    <!-- Заголовок -->
+    <Label text="RisingSun Messenger" style="-fx-text-fill: white; -fx-font-size: 28px; -fx-font-weight: bold;">
+        <font>
+            <Font name="System Bold" size="28.0" />
+        </font>
+    </Label>
+
+    <Label text="Войдите в свою учетную запись" style="-fx-text-fill: #e0e0e0; -fx-font-size: 14px;" />
+
+    <Separator style="-fx-background-color: rgba(255,255,255,0.3);" />
+
+    <!-- Форма входа -->
+    <VBox spacing="15" style="-fx-background-color: rgba(255,255,255,0.1); -fx-background-radius: 10; -fx-padding: 30;">
+        <VBox spacing="5">
+            <Label text="Имя пользователя" style="-fx-text-fill: white; -fx-font-weight: bold;" />
+            <TextField fx:id="usernameField" promptText="Введите имя пользователя" style="-fx-background-radius: 5;" />
+        </VBox>
+
+        <VBox spacing="5">
+            <Label text="Пароль" style="-fx-text-fill: white; -fx-font-weight: bold;" />
+            <PasswordField fx:id="passwordField" promptText="Введите пароль" style="-fx-background-radius: 5;"
+                           onAction="#handleLogin" />
+        </VBox>
+
+        <HBox spacing="10" alignment="CENTER">
+            <Button fx:id="loginButton" text="Войти" onAction="#handleLogin"
+                    style="-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 10 20;"
+                    defaultButton="true" />
+
+            <Button fx:id="registerButton" text="Регистрация" onAction="#handleRegister"
+                    style="-fx-background-color: #2196F3; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 5; -fx-padding: 10 20;" />
+        </HBox>
+
+        <HBox alignment="CENTER" spacing="10">
+            <ProgressIndicator fx:id="progressIndicator" progress="0" />
+            <Label fx:id="statusLabel" text="Готов к работе" style="-fx-text-fill: #e0e0e0;" />
+        </HBox>
+    </VBox>
+    <!-- Информация -->
+    <VBox spacing="10" style="-fx-background-color: rgba(0,0,0,0.2); -fx-background-radius: 10; -fx-padding: 15;">
+        <Label text="Информация:" style="-fx-text-fill: white; -fx-font-weight: bold;" />
+        <Label text="• Имя пользователя: 3-50 символов" style="-fx-text-fill: #e0e0e0; -fx-font-size: 12px;" />
+        <Label text="• Пароль: минимум 6 символов" style="-fx-text-fill: #e0e0e0; -fx-font-size: 12px;" />
+    </VBox>
+</VBox>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.RisingSun.Controllers.ChatController"
+      style="-fx-background-color: #2c3e50;">
+
+    <!-- Верхняя панель -->
+    <HBox style="-fx-background-color: #34495e; -fx-padding: 15;" spacing="20">
+        <Label text="RisingSun Messenger" style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;" />
+        <Region HBox.hgrow="ALWAYS" />
+        <Label fx:id="usernameLabel" text="Пользователь: " style="-fx-text-fill: #ecf0f1;" />
+        <Label fx:id="statusLabel" text="Статус: " style="-fx-text-fill: #2ecc71;" />
+    </HBox>
+
+    <!-- Область сообщений -->
+    <VBox VBox.vgrow="ALWAYS" style="-fx-padding: 20;">
+        <Label text="Сообщения чата:" style="-fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 0 0 10 0;" />
+
+        <ListView fx:id="messagesListView" style="-fx-background-color: #34495e; -fx-border-color: #7f8c8d; -fx-border-radius: 5; -fx-background-radius: 5;"
+                  VBox.vgrow="ALWAYS">
+            <padding><Insets top="10" right="10" bottom="10" left="10" /></padding>
+        </ListView>
+    </VBox>
+
+    <!-- Панель ввода -->
+    <HBox spacing="10" style="-fx-background-color: #34495e; -fx-padding: 20;" alignment="CENTER_LEFT">
+        <TextField fx:id="messageField" promptText="Введите сообщение..." HBox.hgrow="ALWAYS"
+                   style="-fx-background-radius: 20; -fx-padding: 10 20;" onAction="#handleKeyPress" />
+
+        <Button fx:id="sendButton" text="Отправить" onAction="#handleSendMessage"
+                style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 20; -fx-padding: 10 20;" />
+    </HBox>
+</VBox>
