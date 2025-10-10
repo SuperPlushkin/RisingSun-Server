@@ -107,3 +107,24 @@ CREATE TABLE message_read_status (
 CREATE INDEX idx_read_status_read_at ON message_read_status(read_at);
 
 
+
+
+
+CREATE OR REPLACE FUNCTION insert_user_if_not_exists(p_username TEXT, p_hash_password TEXT)
+RETURNS BOOLEAN AS $$
+DECLARE
+    inserted BOOLEAN := FALSE;
+BEGIN
+    WITH ins AS (
+        INSERT INTO users (username, hash_password, last_login)
+        SELECT p_username, p_hash_password, CURRENT_TIMESTAMP
+        WHERE NOT EXISTS (
+            SELECT 1 FROM users WHERE username = p_username
+        )
+        RETURNING id
+    )
+    SELECT COUNT(*) > 0 INTO inserted FROM ins;
+
+    RETURN inserted;
+END;
+$$ LANGUAGE plpgsql;

@@ -19,18 +19,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByUsername(String username);
 
 
-    @Query(value = """
-    WITH ins AS (
-        INSERT INTO users (username, password, last_login)
-        SELECT :username, :password, CURRENT_TIMESTAMP
-        WHERE NOT EXISTS (
-            SELECT 1 FROM users WHERE username = :username
-        )
-        RETURNING id
-    )
-    SELECT COUNT(*) > 0 FROM ins
-    """, nativeQuery = true)
-    boolean insertIfNotExists(@Param("username") String username, @Param("password") String password);
+    @Query(value = "SELECT insert_user_if_not_exists(:username, :hash_password)", nativeQuery = true)
+    boolean insertUserIfNotExists(@Param("username") String username, @Param("hash_password") String hash_password);
 
     @Modifying
     @Transactional

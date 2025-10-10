@@ -20,7 +20,7 @@ public class AuthService {
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public String registerUser(String username, String password) {
-        return userRepository.insertIfNotExists(username, passwordEncoder.encode(password)) ? "User registered successfully" : "User already exists";
+        return userRepository.insertUserIfNotExists(username, passwordEncoder.encode(password)) ? "User registered successfully" : "User already exists";
     }
 
     public Optional<String> authenticateUser(String username, String password) {
