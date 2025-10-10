@@ -1,15 +1,15 @@
 -- Создание таблицы пользователей
 CREATE TABLE users (
     id BIGSERIAL PRIMARY KEY,
-    username(30) VARCHAR NOT NULL UNIQUE
+    username VARCHAR(30) NOT NULL UNIQUE
         CHECK (
             char_length(username) >= 4 AND
             username ~ '^[a-zA-Z0-9_]+$'
         ),
-    hash_password(64) VARCHAR NOT NULL
+    hash_password VARCHAR(64) NOT NULL
         CHECK (
-            char_length(password) >= 8 AND
-            password ~ '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$'
+            char_length(hash_password) >= 8 AND
+            hash_password ~ '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$'
         ),
     last_login TIMESTAMP,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -26,8 +26,9 @@ CREATE INDEX idx_users_enabled ON users(enabled);
 CREATE TABLE login_history (
     id BIGSERIAL PRIMARY KEY,
     user_id BIGINT NOT NULL,
-    ip_address VARCHAR NOT NULL,
+    ip_address VARCHAR(45) NOT NULL,
     device_info VARCHAR NOT NULL,
+    login_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     success BOOLEAN NOT NULL,
     CONSTRAINT fk_login_user FOREIGN KEY (user_id) REFERENCES users(id)
 );

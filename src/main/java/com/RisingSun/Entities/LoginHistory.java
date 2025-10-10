@@ -21,7 +21,7 @@ public class LoginHistory {
     @Column(nullable = false)
     private String device_info;
     @Column(nullable = false)
-    private LocalDateTime time = LocalDateTime.now();
+    private LocalDateTime login_at = LocalDateTime.now();
     @Column(nullable = false)
     private Boolean success = false;
 }
