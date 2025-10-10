@@ -1,29 +1,25 @@
 -- Создание таблицы пользователей
-CREATE TABLE users (
+DROP SCHEMA public CASCADE;
+CREATE SCHEMA public;
+
+CREATE TABLE IF NOT EXISTS users (
     id BIGSERIAL PRIMARY KEY,
-    username VARCHAR(30) NOT NULL UNIQUE
-        CHECK (
-            char_length(username) >= 4 AND
-            username ~ '^[a-zA-Z0-9_]+$'
-        ),
-    hash_password VARCHAR(64) NOT NULL
-        CHECK (
-            char_length(hash_password) >= 8 AND
-            hash_password ~ '^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$'
-        ),
+    username VARCHAR(30) NOT NULL UNIQUE CHECK (char_length(username) >= 4),
+    hash_password VARCHAR(64) NOT NULL CHECK (char_length(hash_password) >= 8),
     last_login TIMESTAMP,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     enabled BOOLEAN NOT NULL DEFAULT TRUE,
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE
 );
 
-CREATE INDEX idx_users_username ON users(username);
-CREATE INDEX idx_users_enabled ON users(enabled);
+CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
+CREATE INDEX IF NOT EXISTS idx_users_enabled ON users(enabled);
+
 
 
 
 -- История логинов
-CREATE TABLE login_history (
+CREATE TABLE IF NOT EXISTS login_history (
     id BIGSERIAL PRIMARY KEY,
     user_id BIGINT NOT NULL,
     ip_address VARCHAR(45) NOT NULL,
@@ -33,31 +29,27 @@ CREATE TABLE login_history (
     CONSTRAINT fk_login_user FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-CREATE INDEX idx_login_user_id ON login_history(user_id);
-CREATE INDEX idx_login_success ON login_history(success);
+CREATE INDEX IF NOT EXISTS idx_login_user_id ON login_history(user_id);
+CREATE INDEX IF NOT EXISTS idx_login_success ON login_history(success);
 
 
 
 -- Чаты
-CREATE TABLE chats (
+CREATE TABLE IF NOT EXISTS chats (
     id BIGSERIAL PRIMARY KEY,
-    name VARCHAR(50) NOT NULL
-        CHECK (
-            char_length(name) >= 4 AND
-            name ~ '^[a-zA-Z0-9 _-]+$'
-        ),
+    name VARCHAR(50) NOT NULL CHECK (char_length(name) >= 4),
     created_by BIGINT NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
     CONSTRAINT fk_chat_creator FOREIGN KEY (created_by) REFERENCES users(id)
 );
 
-CREATE INDEX idx_chats_is_deleted ON chats(is_deleted);
+CREATE INDEX IF NOT EXISTS idx_chats_is_deleted ON chats(is_deleted);
 
 
 
 -- Участники чатов
-CREATE TABLE chat_members (
+CREATE TABLE IF NOT EXISTS chat_members (
     id BIGSERIAL PRIMARY KEY,
     chat_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
@@ -69,13 +61,13 @@ CREATE TABLE chat_members (
     CONSTRAINT uq_chat_user UNIQUE (chat_id, user_id)
 );
 
-CREATE INDEX idx_chat_members_chat_id ON chat_members(chat_id);
-CREATE INDEX idx_chat_members_user_id ON chat_members(user_id);
+CREATE INDEX IF NOT EXISTS idx_chat_members_chat_id ON chat_members(chat_id);
+CREATE INDEX IF NOT EXISTS idx_chat_members_user_id ON chat_members(user_id);
 
 
 
 -- Сообщения
-CREATE TABLE messages (
+CREATE TABLE IF NOT EXISTS messages (
     id BIGSERIAL PRIMARY KEY,
     sender_id BIGINT NOT NULL,
     chat_id BIGINT NOT NULL,
@@ -87,15 +79,15 @@ CREATE TABLE messages (
     CONSTRAINT fk_message_chat FOREIGN KEY (chat_id) REFERENCES chats(id)
 );
 
-CREATE INDEX idx_messages_chat_id ON messages(chat_id);
-CREATE INDEX idx_messages_sender_id ON messages(sender_id);
-CREATE INDEX idx_messages_sent_at ON messages(sent_at);
-CREATE INDEX idx_messages_is_deleted ON messages(is_deleted);
+CREATE INDEX IF NOT EXISTS idx_messages_chat_id ON messages(chat_id);
+CREATE INDEX IF NOT EXISTS idx_messages_sender_id ON messages(sender_id);
+CREATE INDEX IF NOT EXISTS idx_messages_sent_at ON messages(sent_at);
+CREATE INDEX IF NOT EXISTS idx_messages_is_deleted ON messages(is_deleted);
 
 
 
 -- Статусы прочтения сообщений
-CREATE TABLE message_read_status (
+CREATE TABLE IF NOT EXISTS message_read_status (
     message_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
     read_at TIMESTAMP NOT NULL,
@@ -104,8 +96,7 @@ CREATE TABLE message_read_status (
     CONSTRAINT fk_read_user FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-CREATE INDEX idx_read_status_read_at ON message_read_status(read_at);
-
+CREATE INDEX IF NOT EXISTS idx_read_status_read_at ON message_read_status(read_at);
 
 
 
