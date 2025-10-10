@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS chats (
     name VARCHAR(50) NOT NULL CHECK (char_length(name) >= 4),
     created_by BIGINT NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    is_group BOOLEAN NOT NULL DEFAULT FALSE;
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
     CONSTRAINT fk_chat_creator FOREIGN KEY (created_by) REFERENCES users(id)
 );

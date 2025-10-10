@@ -28,5 +28,7 @@ public class Chat {
     @Column(nullable = false)
     private LocalDateTime created_at = LocalDateTime.now();
     @Column(nullable = false)
+    private Boolean is_group = false;
+    @Column(nullable = false)
     private Boolean is_deleted = false;
 }
