@@ -25,12 +25,11 @@ CREATE TABLE IF NOT EXISTS login_history (
     ip_address VARCHAR(45) NOT NULL,
     device_info VARCHAR NOT NULL,
     login_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    success BOOLEAN NOT NULL,
+
     CONSTRAINT fk_login_user FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 CREATE INDEX IF NOT EXISTS idx_login_user_id ON login_history(user_id);
-CREATE INDEX IF NOT EXISTS idx_login_success ON login_history(success);
 
 
 

@@ -15,9 +15,8 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    Optional<User> findByUsername(String username);
-    boolean existsByUsername(String username);
-
+    @Query("SELECT id, hash_password FROM users WHERE username = :username AND enabled = TRUE AND is_deleted = FALSE")
+    Optional<User> findByUsername(@Param("username") String username);
 
     @Query(value = "SELECT insert_user_if_not_exists(:username, :hash_password)", nativeQuery = true)
     boolean insertUserIfNotExists(@Param("username") String username, @Param("hash_password") String hash_password);

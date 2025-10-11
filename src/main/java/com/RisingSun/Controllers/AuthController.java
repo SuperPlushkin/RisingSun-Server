@@ -3,16 +3,15 @@ package com.RisingSun.Controllers;
 import com.RisingSun.DTO.LoginRequest;
 import com.RisingSun.DTO.RegisterRequest;
 import com.RisingSun.JWT.JwtUtil;
-import com.RisingSun.Entities.User;
 import com.RisingSun.Services.AuthService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 
 @RestController
@@ -31,22 +30,25 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
 
-        String result = authService.registerUser(request.getUsername(), request.getPassword());
+        var result = authService.registerUser(request.getUsername(), request.getPassword());
 
-        if (!"User already exists".equals(result)) {
+        if (result.success()) {
             return ResponseEntity.ok("User registered successfully");
         }
-        else return ResponseEntity.badRequest().body("User already exists");
+        else return ResponseEntity.badRequest().body(result.error());
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request, HttpServletRequest httpRequest) {
 
-        Optional<String> username = authService.authenticateUser(request.getUsername(), request.getPassword());
+        String username = request.getUsername();
+        String password = request.getPassword();
 
-        if (username.isPresent())
+        Boolean successful_login = authService.authenticateUser(username, password, httpRequest);
+
+        if (successful_login)
         {
-            String token = jwtUtil.generateToken(username.get());
+            String token = jwtUtil.generateToken(username);
             return ResponseEntity.ok(token);
         }
         else return ResponseEntity.badRequest().body("Invalid credentials");
