@@ -15,8 +15,8 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public List<UserDTO> getFilteredUsers(int limited, String filter) {
-        Pageable pageable = PageRequest.of(0, limited);
+    public List<UserDTO> getFilteredUsers(int limited, int offset, String filter) {
+        Pageable pageable = PageRequest.of(offset, limited);
         return userRepository.findFilteredUsers(filter, pageable);
     }
 }

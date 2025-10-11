@@ -25,9 +25,9 @@ public class AuthService {
 
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public OperationResult registerUser(String username, String password) {
+    public OperationResult registerUser(String username, String name, String password) {
 
-        var success = userRepository.insertUserIfNotExists(username, passwordEncoder.encode(password));
+        var success = userRepository.insertUserIfNotExists(username, name, passwordEncoder.encode(password));
 
         return new OperationResult(success, success ? null : "User already exists");
     }

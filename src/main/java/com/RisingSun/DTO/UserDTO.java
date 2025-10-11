@@ -1,6 +1,6 @@
 package com.RisingSun.DTO;
 
-public class UserDTO {
+public class UserDTO{
     private String username;
     private String name;
 

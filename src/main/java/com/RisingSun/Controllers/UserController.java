@@ -18,6 +18,6 @@ public class UserController {
 
     @PostMapping("/getmany")
     public List<UserDTO> getManyUsers(@Valid @RequestBody UserFilterRequest request) {
-        return userService.getFilteredUsers(request.getLimited(), request.getFilter());
+        return userService.getFilteredUsers(request.getLimited(), request.getOffset(), request.getFilter());
     }
 }

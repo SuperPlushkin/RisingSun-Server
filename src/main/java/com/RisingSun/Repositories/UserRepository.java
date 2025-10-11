@@ -19,14 +19,14 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    @Query("SELECT u.username AS username, u.name AS name FROM User u WHERE u.username LIKE CONCAT(:prefix, '%') AND u.enabled = true AND u.is_deleted = false ORDER BY u.created_at DESC")
+    @Query("SELECT new com.RisingSun.DTO.UserDTO(u.username, u.name) FROM User u WHERE u.username ILIKE CONCAT('%', :prefix, '%') AND u.enabled = true AND u.is_deleted = false ORDER BY u.created_at DESC")
     List<UserDTO> findFilteredUsers(@Param("prefix") String prefix, Pageable pageable);
 
     @Query("SELECT u FROM User u WHERE u.username = :username AND u.enabled = TRUE AND u.is_deleted = FALSE")
     Optional<User> findByUsername(@Param("username") String username);
 
-    @Query(value = "SELECT insert_user_if_not_exists(:username, :hash_password)", nativeQuery = true)
-    boolean insertUserIfNotExists(@Param("username") String username, @Param("hash_password") String hash_password);
+    @Query(value = "SELECT insert_user_if_not_exists(:username, :name, :hash_password)", nativeQuery = true)
+    boolean insertUserIfNotExists(@Param("username") String username, @Param("name") String name, @Param("hash_password") String hash_password);
 
     @Modifying
     @Transactional

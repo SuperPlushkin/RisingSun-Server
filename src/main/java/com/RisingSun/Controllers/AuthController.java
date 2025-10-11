@@ -30,7 +30,7 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
 
-        var result = authService.registerUser(request.getUsername(), request.getPassword());
+        var result = authService.registerUser(request.getUsername(), request.getName(), request.getPassword());
 
         if (result.success()) {
             return ResponseEntity.ok("User registered successfully");

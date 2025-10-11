@@ -22,14 +22,14 @@ services:
       - risingsun-net
 
   app:
-    image: superplushkin/risingsun-server:latest #НАДО ЗАМЕНИТЬ НА ВЕРСИЮ ДЛЯ ТЕСТОВ
+    build:
+      context: .
     container_name: risingsun-app
-    pull_policy: always
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/messenger_db
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
       SPRING_PROFILES_ACTIVE: docker,prod
       SERVER_PORT: 8080
       LOGGING_LEVEL_COM_F4TURE_IS_HERE: INFO

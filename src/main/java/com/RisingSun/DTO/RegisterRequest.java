@@ -10,6 +10,11 @@ public class RegisterRequest {
     @Pattern(regexp = "^[a-zA-Z0-9_]+$", message = "Username must contain only letters, digits, and underscores")
     private String username;
 
+    @NotBlank(message = "Name is required")
+    @Size(min = 4, max = 30, message = "Name must be between 4 and 50 characters")
+    @Pattern(regexp = "^[a-zA-Z0-9_]+$", message = "Name must contain only letters, digits, and underscores")
+    private String name;
+
     @NotBlank(message = "Password is required")
     @Size(min = 8, max = 50, message = "Password must be between 8 and 50 characters")
     @Pattern(
@@ -19,7 +24,9 @@ public class RegisterRequest {
     private String password;
 
     // Getters and setters
+
     public String getUsername() { return username; }
+
+    public String getName() { return name; }
     public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
 }

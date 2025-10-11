@@ -53,6 +53,9 @@ public class User {
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
 
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+
     public String getHashPassword() { return hash_password; }
     public void setHashPassword(String hash_password) { this.hash_password = hash_password; }
 
