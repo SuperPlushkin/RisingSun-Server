@@ -16,7 +16,6 @@ import java.util.Optional;
 @Transactional
 public class AuthService {
 
-
     public record OperationResult(boolean success, String error) {}
 
     @Autowired
@@ -50,10 +49,6 @@ public class AuthService {
         }
 
         return false;
-    }
-
-    public Optional<User> getUserByUsername(String username) {
-        return userRepository.findByUsername(username);
     }
 
     private String extractClientIp(HttpServletRequest request) {

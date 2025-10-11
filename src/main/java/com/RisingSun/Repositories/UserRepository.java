@@ -1,7 +1,9 @@
 package com.RisingSun.Repositories;
 
+import com.RisingSun.DTO.UserDTO;
 import com.RisingSun.Entities.User;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -9,11 +11,16 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+
+    @Query("SELECT u.username AS username, u.name AS name FROM User u WHERE u.username LIKE CONCAT(:prefix, '%') AND u.enabled = true AND u.is_deleted = false ORDER BY u.created_at DESC")
+    List<UserDTO> findFilteredUsers(@Param("prefix") String prefix, Pageable pageable);
 
     @Query("SELECT u FROM User u WHERE u.username = :username AND u.enabled = TRUE AND u.is_deleted = FALSE")
     Optional<User> findByUsername(@Param("username") String username);

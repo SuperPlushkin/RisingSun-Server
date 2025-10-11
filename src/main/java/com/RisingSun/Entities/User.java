@@ -21,6 +21,14 @@ public class User {
     )
     private String username;
 
+    @Column(length = 30, nullable = false)
+    @Size(min = 4, max = 30, message = "Name must be between 4 and 30 characters")
+    @Pattern(
+        regexp = "^[a-zA-Z0-9_]+$",
+        message = "Name must contain only letters, digits, and underscores"
+    )
+    private String name;
+
     @Column(length = 64, nullable = false)
     @Size(message = "HashPassword must be 64 characters")
     private String hash_password;

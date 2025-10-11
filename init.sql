@@ -5,6 +5,7 @@ CREATE SCHEMA public;
 CREATE TABLE IF NOT EXISTS users (
     id BIGSERIAL PRIMARY KEY,
     username VARCHAR(30) NOT NULL UNIQUE CHECK (char_length(username) >= 4),
+    name VARCHAR(30) NOT NULL CHECK (char_length(name) >= 4),
     hash_password VARCHAR(64) NOT NULL CHECK (char_length(hash_password) >= 8),
     last_login TIMESTAMP,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -101,14 +102,14 @@ CREATE INDEX IF NOT EXISTS idx_read_status_read_at ON message_read_status(read_a
 
 
 
-CREATE OR REPLACE FUNCTION insert_user_if_not_exists(p_username TEXT, p_hash_password TEXT)
+CREATE OR REPLACE FUNCTION insert_user_if_not_exists(p_username TEXT, p_name TEXT, p_hash_password TEXT)
 RETURNS BOOLEAN AS $$
 DECLARE
     inserted BOOLEAN := FALSE;
 BEGIN
     WITH ins AS (
-        INSERT INTO users (username, hash_password, last_login)
-        SELECT p_username, p_hash_password, CURRENT_TIMESTAMP
+        INSERT INTO users (username, name, hash_password, last_login)
+        SELECT p_username, p_name, p_hash_password, CURRENT_TIMESTAMP
         WHERE NOT EXISTS (
             SELECT 1 FROM users WHERE username = p_username
         )
