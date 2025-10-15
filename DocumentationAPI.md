@@ -15,7 +15,7 @@
 POST /auth/register
 {
   "username": "SuperPlushkin",
-  "password": "12345",
+  "password": "123456",
   "name": "Kirill"
 }
 
@@ -23,7 +23,7 @@ POST /auth/register
 POST /auth/login
 {
   "username": "SuperPlushkin",   // обязательно, 4-30 символов
-  "password": "12345"    // обязательно, минимум 6 символов
+  "password": "123456"    // обязательно, минимум 6 символов
 }
 
 # 3. Использование API с токеном
