@@ -60,7 +60,7 @@ RisingSun-Server/
 ├── .env-example          # 📋 Пример конфигурации окружения
 ├── .gitignore            # 🔒 Игнорируемые файлы Git
 ├── Dockerfile            # 🐳 Конфигурация Docker образа
-├── DocumentationAPI.html # 📚 Документация API
+├── DocumentationAPI.md   # 📚 Документация API
 ├── build.gradle.kts      # ⚙️ Конфигурация сборки Gradle
 ├── docker-compose.yml    # 🐳 Компоновка Docker сервисов
 ├── gradlew               # 🐧 Linux/Mac скрипт Gradle Wrapper
