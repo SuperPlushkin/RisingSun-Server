@@ -1,4 +1,4 @@
-# 🌅 RisingSun Messenger Server
+# 🌅 Sunrise Messenger Server
 
 <div align="center">
 
@@ -7,7 +7,7 @@
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
 
-**Серверная часть мессенджера RisingSun на Java Spring Boot**
+**Серверная часть мессенджера Sunrise на Java Spring Boot**
 
 </div>
 
@@ -37,7 +37,7 @@
 
 ❗ ВАЖНО: Файл .env ОБЯЗАТЕЛЕН для запуска!
 
-    Расположение: /RisingSun-Server/.env
+    Расположение: /Sunrise-Server/.env
 
     Используйте пример: .env-example как шаблон
 
@@ -45,14 +45,14 @@
 
 🐳 Docker Compose
 
-    Файл: /RisingSun-Server/docker-compose.yml
+    Файл: /Sunrise-Server/docker-compose.yml
 
     Уже находится в корне проекта - создавать не нужно
 
 ## 📁 Структура проекта
 
 ```
-RisingSun-Server/
+Sunrise-Server/
 ├── .gradle/              # 🛠️  Кэш Gradle
 ├── gradle/wrapper/       # 📦 Gradle Wrapper файлы
 ├── src/                  # 📁 Исходный код приложения
