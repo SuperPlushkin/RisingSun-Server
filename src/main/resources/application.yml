@@ -24,6 +24,7 @@ spring:
     properties:
       hibernate:
         format_sql: ${HIBERNATE_FORMAT_SQL:false}
+        dialect: org.hibernate.dialect.PostgreSQLDialect
         hibernate.transaction.jta.platform: org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform # ЭТО ДО ТЕХ ПОР, ПОКА 1 БАЗА ДАННЫХ
     show-sql: ${SPRING_JPA_SHOW_SQL:false}
     open-in-view: false
@@ -40,6 +41,6 @@ app:
 
 logging:
   level:
-    com.f4ture_is_here: ${LOGGING_LEVEL_COM_F4TURE_IS_HERE:INFO}
+    com.RisingSun: ${LOGGING_LEVEL_APP:INFO}
     org.hibernate.SQL: ${LOGGING_LEVEL_ORG_HIBERNATE_SQL:WARN}
     org.hibernate.type.descriptor.sql.BasicBinder: WARN

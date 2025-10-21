@@ -6,6 +6,8 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
+@lombok.Getter
+@lombok.Setter
 public class UserFilterRequest {
 
     @NotNull(message = "limited is required")
@@ -21,7 +23,7 @@ public class UserFilterRequest {
 
     private String filter = "";
 
-    public Integer getLimited() { return limited; }
-    public Integer getOffset() { return offset; }
-    public String getFilter() { return filter != null ? filter : ""; }
+    public String getFilter() {
+        return filter != null ? filter : "";
+    }
 }

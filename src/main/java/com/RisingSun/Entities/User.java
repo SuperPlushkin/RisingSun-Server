@@ -4,15 +4,23 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
 public class User {
+
+    @Getter
+    @Setter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Getter
+    @Setter
     @Column(length = 30, nullable = false, unique = true)
     @Size(min = 4, max = 30, message = "Username must be between 4 and 30 characters")
     @Pattern(
@@ -21,6 +29,8 @@ public class User {
     )
     private String username;
 
+    @Getter
+    @Setter
     @Column(length = 30, nullable = false)
     @Size(min = 4, max = 30, message = "Name must be between 4 and 30 characters")
     @Pattern(
@@ -29,9 +39,11 @@ public class User {
     )
     private String name;
 
-    @Column(length = 64, nullable = false)
-    @Size(message = "HashPassword must be 64 characters")
-    private String hash_password;
+    @Getter
+    @Setter
+    @Column(name = "hash_password", length = 64, nullable = false)
+    @Size(min = 64, max = 64, message = "HashPassword must be 64 characters")
+    private String hashPassword;
 
     private LocalDateTime last_login;
     @Column(nullable = false)
@@ -42,25 +54,8 @@ public class User {
     private Boolean is_deleted = false;
 
     public User() {}
-    public User(String username, String hash_password) {
+    public User(String username, String hashPassword) {
         this.username = username;
-        this.hash_password = hash_password;
+        this.hashPassword = hashPassword;
     }
-
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-
-    public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
-
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
-    public String getHashPassword() { return hash_password; }
-    public void setHashPassword(String hash_password) { this.hash_password = hash_password; }
-
-    public LocalDateTime getCreationDate() { return created_at; }
-
-    public boolean isEnabled() { return enabled; }
-    public void setEnabled(boolean enabled) { this.enabled = enabled; }
 }
