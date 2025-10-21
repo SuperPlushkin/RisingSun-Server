@@ -1,1 +1,1 @@
-rootProject.name = "RisingSun-Server"
+rootProject.name = "Sunrise-Server"
