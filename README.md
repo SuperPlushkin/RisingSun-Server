@@ -21,7 +21,7 @@
 1. **Скачайте Docker образ:**
 
    ```bash
-   docker pull superplushkin/risingsun-server
+   docker pull superplushkin/sunrise-server
    ```
 2. **Запустите приложение:**
 
