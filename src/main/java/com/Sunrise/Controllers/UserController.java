@@ -17,7 +17,7 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/getmany")
-    public List<UserDTO> getManyUsers(@Valid @RequestBody UserFilterRequest request) {
+    public List<UserDTO> getManyUsers(@Valid @ModelAttribute  UserFilterRequest request) {
         return userService.getFilteredUsers(request.getLimited(), request.getOffset(), request.getFilter());
     }
 }
