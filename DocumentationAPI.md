@@ -15,7 +15,7 @@
 POST /auth/register
 {
   "username": "SuperPlushkin",
-  "password": "123456",
+  "password": "123456Au", // Исправленно специально для Великого Ивана Дунаева
   "name": "Kirill"
 }
 
@@ -23,17 +23,12 @@ POST /auth/register
 POST /auth/login
 {
   "username": "SuperPlushkin",   // обязательно, 4-30 символов
-  "password": "123456"    // обязательно, минимум 6 символов
+  "password": "123456Au"    // обязательно, минимум 6 символов
 }
 
 # 3. Использование API с токеном
-GET /app/user/getmany
+GET /app/user/getmany?limited=10&offset=0&filter=kiril
 Authorization: Bearer <ваш_токен>
-{
-  "limited": 20,
-  "offset": 0,
-  "filter": "loh"
-}
 
 # 4. ГОТОВО!!!
 ```
