@@ -1,7 +1,7 @@
 services:
   postgres:
     image: postgres:17
-    container_name: risingsun-postgres
+    container_name: sunrise-postgres
     environment:
       POSTGRES_DB: messenger_db
       POSTGRES_USER: postgres
@@ -19,12 +19,12 @@ services:
     restart:
       on-failure:1
     networks:
-      - risingsun-net
+      - sunrise-net
 
   app:
     build:
       context: .
-    container_name: risingsun-app
+    container_name: sunrise-app
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/messenger_db
       SPRING_DATASOURCE_USERNAME: postgres
@@ -44,11 +44,11 @@ services:
     restart:
       on-failure:1
     networks:
-      - risingsun-net
+      - sunrise-net
 
 volumes:
   postgres_data:
 
 networks:
-  risingsun-net:
+  sunrise-net:
     driver: bridge

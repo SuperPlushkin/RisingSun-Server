@@ -19,7 +19,7 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    @Query("SELECT new com.RisingSun.DTO.UserDTO(u.username, u.name) FROM User u WHERE u.username ILIKE CONCAT('%', :prefix, '%') AND u.enabled = true AND u.is_deleted = false ORDER BY u.created_at DESC")
+    @Query("SELECT new com.Sunrise.DTO.UserDTO(u.username, u.name) FROM User u WHERE u.username ILIKE CONCAT('%', :prefix, '%') AND u.enabled = true AND u.is_deleted = false ORDER BY u.created_at DESC")
     List<UserDTO> findFilteredUsers(@Param("prefix") String prefix, Pageable pageable);
 
     @Query("SELECT u FROM User u WHERE u.username = :username AND u.enabled = TRUE AND u.is_deleted = FALSE")
