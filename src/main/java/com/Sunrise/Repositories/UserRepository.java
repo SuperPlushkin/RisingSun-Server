@@ -1,9 +1,11 @@
 package com.Sunrise.Repositories;
 
+import com.Sunrise.DTO.InsertUserResult;
 import com.Sunrise.DTO.UserDTO;
 import com.Sunrise.Entities.User;
 
 import org.springframework.data.domain.Pageable;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -25,8 +27,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT u FROM User u WHERE u.username = :username AND u.enabled = TRUE AND u.is_deleted = FALSE")
     Optional<User> findByUsername(@Param("username") String username);
 
-    @Query(value = "SELECT insert_user_if_not_exists(:username, :name, :hash_password)", nativeQuery = true)
-    boolean insertUserIfNotExists(@Param("username") String username, @Param("name") String name, @Param("hash_password") String hash_password);
+    @Query(value = "SELECT success, error_text, generated_token " + "FROM insert_user_if_not_exists(:username, :name, :email, :hash_password)", nativeQuery = true)
+    InsertUserResult insertUserIfNotExists(@Param("username") String username, @Param("name") String name, @Param("email") String email, @Param("hash_password") String hash_password);
 
     @Modifying
     @Transactional

@@ -1,6 +1,8 @@
 package com.Sunrise.Entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
@@ -38,6 +40,12 @@ public class User {
         message = "Name must contain only letters, digits, and underscores"
     )
     private String name;
+
+    @Getter
+    @Setter
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email must be valid")
+    private String email;
 
     @Getter
     @Setter

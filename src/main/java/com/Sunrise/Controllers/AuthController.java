@@ -2,9 +2,12 @@ package com.Sunrise.Controllers;
 
 import com.Sunrise.DTO.LoginRequest;
 import com.Sunrise.DTO.RegisterRequest;
+import com.Sunrise.Entities.VerificationToken;
 import com.Sunrise.JWT.JwtUtil;
+import com.Sunrise.Repositories.VerificationTokenRepository;
 import com.Sunrise.Services.AuthService;
 
+import com.Sunrise.Services.EmailService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
@@ -22,6 +25,9 @@ public class AuthController {
     private AuthService authService;
 
     @Autowired
+    private EmailService emailService;
+
+    @Autowired
     private JwtUtil jwtUtil;
 
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -30,10 +36,13 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
 
-        var result = authService.registerUser(request.getUsername(), request.getName(), request.getPassword());
+        var result = authService.registerUser(request.getUsername(), request.getName(), request.getEmail(), request.getPassword());
 
         if (result.success()) {
-            return ResponseEntity.ok("User registered successfully");
+
+            emailService.sendVerificationEmail(request.getEmail(), result.token());
+
+            return ResponseEntity.ok("User registered successfully. Check your mail to activate your account!!!");
         }
         else return ResponseEntity.badRequest().body(result.error());
     }
@@ -53,4 +62,6 @@ public class AuthController {
         }
         else return ResponseEntity.badRequest().body("Invalid credentials");
     }
+
+
 }

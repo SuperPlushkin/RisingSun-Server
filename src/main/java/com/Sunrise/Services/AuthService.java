@@ -1,6 +1,8 @@
 package com.Sunrise.Services;
 
+import com.Sunrise.DTO.InsertUserResult;
 import com.Sunrise.Entities.User;
+import com.Sunrise.Entities.VerificationToken;
 import com.Sunrise.Repositories.LoginHistoryRepository;
 import com.Sunrise.Repositories.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,12 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Transactional
 public class AuthService {
 
-    public record OperationResult(boolean success, String error) {}
+    public record OperationResult(boolean success, String error, String token) {}
 
     @Autowired
     private UserRepository userRepository;
@@ -25,11 +28,11 @@ public class AuthService {
 
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public OperationResult registerUser(String username, String name, String password) {
+    public OperationResult registerUser(String username, String email, String name, String password) {
 
-        var success = userRepository.insertUserIfNotExists(username, name, passwordEncoder.encode(password));
+        InsertUserResult result = userRepository.insertUserIfNotExists(username, name, email, passwordEncoder.encode(password));
 
-        return new OperationResult(success, success ? null : "User already exists");
+        return new OperationResult(result.getSuccess(), result.getErrorText(), result.getGeneratedToken());
     }
 
     public Boolean authenticateUser(String username, String password, HttpServletRequest httpRequest) {
