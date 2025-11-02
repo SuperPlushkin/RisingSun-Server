@@ -1,11 +1,16 @@
 package com.Sunrise.Services;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
 public class EmailService {
+
+    @Value("${app.confirmation.base-url}")
+    private String baseUrl;
 
     private final JavaMailSender mailSender;
 
@@ -13,18 +18,24 @@ public class EmailService {
         this.mailSender = mailSender;
     }
 
+    @Async
     public void sendVerificationEmail(String to, String token) {
-        String subject = "Подтверждение регистрации";
-        String confirmationUrl = "https://your-domain.com/api/auth/confirm?token=" + token;
-        String message = "Здравствуйте!\n\n" +
-                "Для подтверждения регистрации перейдите по ссылке:\n" +
-                confirmationUrl + "\n\n" +
-                "Ссылка действительна 24 часа.";
 
         SimpleMailMessage email = new SimpleMailMessage();
+        email.setFrom("superplushkin@mail.ru");
         email.setTo(to);
-        email.setSubject(subject);
-        email.setText(message);
+        email.setSubject("Подтверждение регистрации на Sunrise Messenger");
+        email.setText(String.format(
+            """
+            Здравствуйте!
+            
+            Для подтверждения регистрации перейдите по ссылке:
+            %s/auth/confirm?type=email_confirmation&token=%s
+            
+            Ссылка действительна 24 часа.
+            """,
+            baseUrl, token
+        ));
 
         mailSender.send(email);
     }

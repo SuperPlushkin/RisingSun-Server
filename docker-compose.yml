@@ -26,20 +26,25 @@ services:
       context: .
     container_name: sunrise-app
     environment:
+
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/messenger_db
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       SPRING_JPA_HIBERNATE_DDL_AUTO: validate
       SPRING_PROFILES_ACTIVE: docker,prod
-      SERVER_PORT: 8080
+
       LOGGING_LEVEL_APP: INFO
       LOGGING_LEVEL_ORG_HIBERNATE_SQL: WARN
+
       APP_MESSENGER_MAX_MESSAGE_SIZE: 5000
       APP_MESSENGER_ALLOW_ANONYMOUS: false
 
-      BASE_URL: http://95.154.89.8:8888/app
-      MAIL_USERNAME: kirill.vldk@gmail.com
+      BASE_URL: http://${IP_SERVER}:${PORT_SERVER}/app
+
+      MAIL_USERNAME: ${MAIL_USERNAME}
       MAIL_PASSWORD: ${MAIL_PASSWORD}
+
+      JWT_SECRET: ${JWT_SECRET}
     ports:
       - "8081:8080"
     depends_on:

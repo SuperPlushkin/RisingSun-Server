@@ -1,4 +1,4 @@
-package com.Sunrise.DTO;
+package com.Sunrise.DTO.ServiceAndController;
 
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;

@@ -34,7 +34,7 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Включаем CORS с настройками
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/app/auth/register", "/app/auth/login", "/app/actions/status").permitAll() // Разрешаем без аутентификации
+                .requestMatchers(PublicEndpoints.ENDPOINTS.toArray(new String[0])).permitAll() // Разрешаем без аутентификации
                 .anyRequest().authenticated()
             )
             .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);

@@ -1,17 +1,15 @@
 package com.Sunrise.Controllers;
 
-import com.Sunrise.DTO.LoginRequest;
-import com.Sunrise.DTO.RegisterRequest;
-import com.Sunrise.Entities.VerificationToken;
+import com.Sunrise.DTO.ServiceAndController.LoginRequest;
+import com.Sunrise.DTO.ServiceAndController.RegisterRequest;
+import com.Sunrise.DTO.ServiceAndController.TokenConfirmationResult;
 import com.Sunrise.JWT.JwtUtil;
-import com.Sunrise.Repositories.VerificationTokenRepository;
 import com.Sunrise.Services.AuthService;
-
 import com.Sunrise.Services.EmailService;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -21,27 +19,25 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/app/auth")
 public class AuthController {
 
-    @Autowired
     private AuthService authService;
-
-    @Autowired
     private EmailService emailService;
-
-    @Autowired
     private JwtUtil jwtUtil;
-
     private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+    public AuthController(AuthService authService, EmailService emailService, JwtUtil jwtUtil){
+        this.authService = authService;
+        this.emailService = emailService;
+        this.jwtUtil = jwtUtil;
+    }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
 
         var result = authService.registerUser(request.getUsername(), request.getName(), request.getEmail(), request.getPassword());
 
-        if (result.success()) {
-
+        if (result.success())
+        {
             emailService.sendVerificationEmail(request.getEmail(), result.token());
-
             return ResponseEntity.ok("User registered successfully. Check your mail to activate your account!!!");
         }
         else return ResponseEntity.badRequest().body(result.error());
@@ -53,7 +49,7 @@ public class AuthController {
         String username = request.getUsername();
         String password = request.getPassword();
 
-        Boolean successful_login = authService.authenticateUser(username, password, httpRequest);
+        boolean successful_login = authService.authenticateUser(username, password, httpRequest);
 
         if (successful_login)
         {
@@ -63,5 +59,34 @@ public class AuthController {
         else return ResponseEntity.badRequest().body("Invalid credentials");
     }
 
+    @GetMapping(value = "/confirm", produces = "text/html; charset=UTF-8")
+    public String confirmEmail(@RequestParam("type") String type, @RequestParam("token") String token) {
 
+        TokenConfirmationResult result = authService.confirmToken(type, token);
+
+        String status = result.isSuccess()
+                ? "<h3 style='color:green'>✅ Успех!</h3>"
+                : "<h3 style='color:red'>❌ Ошибка</h3>";
+
+        return """
+           <!DOCTYPE html>
+           <html lang="ru">
+           <head>
+               <meta charset="UTF-8">
+               <title>Email Confirmation</title>
+               <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+           </head>
+           <body class="bg-light">
+               <div class="container mt-5">
+                   <div class="card shadow-sm">
+                       <div class="card-body text-center">
+                           %s
+                           <p>%s</p>
+                       </div>
+                   </div>
+               </div>
+           </body>
+           </html>
+           """.formatted(status, result.getOperationText());
+    }
 }

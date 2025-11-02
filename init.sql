@@ -2,6 +2,8 @@
 DROP SCHEMA public CASCADE;
 CREATE SCHEMA public;
 
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
 CREATE TABLE IF NOT EXISTS users (
     id BIGSERIAL PRIMARY KEY,
     username VARCHAR(30) NOT NULL UNIQUE CHECK (char_length(username) >= 4),
@@ -41,7 +43,7 @@ CREATE TABLE IF NOT EXISTS verification_tokens (
     token VARCHAR(128) NOT NULL UNIQUE,
     expiry_date TIMESTAMP NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    token_type VARCHAR(30) NOT NULL DEFAULT 'email_confirmation'
+    token_type VARCHAR(30) NOT NULL DEFAULT 'email_confirmation',
 
     CONSTRAINT fk_verification_user FOREIGN KEY (user_id) REFERENCES users(id)
 );
@@ -58,6 +60,7 @@ CREATE TABLE IF NOT EXISTS chats (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     is_group BOOLEAN NOT NULL DEFAULT FALSE,
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+
     CONSTRAINT fk_chat_creator FOREIGN KEY (created_by) REFERENCES users(id)
 );
 
@@ -73,6 +76,7 @@ CREATE TABLE IF NOT EXISTS chat_members (
     joined_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     is_admin BOOLEAN NOT NULL DEFAULT FALSE,
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+
     CONSTRAINT fk_chat_member_chat FOREIGN KEY (chat_id) REFERENCES chats(id),
     CONSTRAINT fk_chat_member_user FOREIGN KEY (user_id) REFERENCES users(id),
     CONSTRAINT uq_chat_user UNIQUE (chat_id, user_id)
@@ -92,6 +96,7 @@ CREATE TABLE IF NOT EXISTS messages (
     sent_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     read_count BIGINT NOT NULL DEFAULT 0 CHECK (read_count >= 0),
     is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
+
     CONSTRAINT fk_message_sender FOREIGN KEY (sender_id) REFERENCES users(id),
     CONSTRAINT fk_message_chat FOREIGN KEY (chat_id) REFERENCES chats(id)
 );
@@ -108,7 +113,9 @@ CREATE TABLE IF NOT EXISTS message_read_status (
     message_id BIGINT NOT NULL,
     user_id BIGINT NOT NULL,
     read_at TIMESTAMP NOT NULL,
+
     PRIMARY KEY (message_id, user_id),
+
     CONSTRAINT fk_read_message FOREIGN KEY (message_id) REFERENCES messages(id),
     CONSTRAINT fk_read_user FOREIGN KEY (user_id) REFERENCES users(id)
 );
@@ -118,24 +125,8 @@ CREATE INDEX IF NOT EXISTS idx_read_status_read_at ON message_read_status(read_a
 
 
 
---CREATE OR REPLACE FUNCTION insert_user_if_not_exists(p_username TEXT, p_name TEXT, p_hash_password TEXT)
---RETURNS BOOLEAN AS $$
---DECLARE
---    inserted BOOLEAN := FALSE;
---BEGIN
---    WITH ins AS (
---        INSERT INTO users (username, name, hash_password, last_login)
---        SELECT p_username, p_name, p_hash_password, CURRENT_TIMESTAMP
---        WHERE NOT EXISTS (
---            SELECT 1 FROM users WHERE username = p_username
---        )
---        RETURNING id
---    )
---    SELECT COUNT(*) > 0 INTO inserted FROM ins;
---
---    RETURN inserted;
---END;
---$$ LANGUAGE plpgsql;
+
+
 
 CREATE OR REPLACE FUNCTION insert_user_if_not_exists(p_username TEXT, p_name TEXT, p_email TEXT, p_hash_password TEXT)
 RETURNS TABLE(success BOOLEAN, error_text TEXT, generated_token TEXT) AS $$
@@ -149,7 +140,7 @@ BEGIN
     END IF;
 
     IF EXISTS (SELECT 1 FROM users WHERE email = p_email) THEN
-        RETURN QUERY SELECT FALSE, 'Email already exists', NULL;
+        RETURN QUERY SELECT FALSE, 'Email already exists aaaaa', NULL;
         RETURN;
     END IF;
 
@@ -165,5 +156,35 @@ BEGIN
     VALUES (v_user_id, v_token, CURRENT_TIMESTAMP + INTERVAL '24 hours', CURRENT_TIMESTAMP, 'email_confirmation');
 
     RETURN QUERY SELECT TRUE, NULL, v_token;
+END;
+$$ LANGUAGE plpgsql;
+
+
+
+CREATE OR REPLACE FUNCTION confirm_user_by_token(p_token TEXT)
+RETURNS TABLE (success BOOLEAN, error_text TEXT) AS $$
+DECLARE
+    v_user_id BIGINT;
+    v_expiry TIMESTAMP;
+BEGIN
+
+    SELECT user_id, expiry_date INTO v_user_id, v_expiry FROM verification_tokens
+    WHERE token = p_token AND token_type = 'email_confirmation';
+
+    IF NOT FOUND THEN
+        RETURN QUERY SELECT FALSE, 'Invalid token';
+        RETURN;
+    END IF;
+
+    IF v_expiry < CURRENT_TIMESTAMP THEN
+        RETURN QUERY SELECT FALSE, 'Token expired';
+        RETURN;
+    END IF;
+
+    UPDATE users SET enabled = TRUE WHERE id = v_user_id;
+
+    DELETE FROM verification_tokens WHERE token = p_token;
+
+    RETURN QUERY SELECT TRUE, NULL;
 END;
 $$ LANGUAGE plpgsql;

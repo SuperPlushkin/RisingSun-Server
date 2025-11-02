@@ -1,4 +1,4 @@
-package com.Sunrise.DTO;
+package com.Sunrise.DTO.ServiceAndController;
 
 @lombok.Getter
 @lombok.AllArgsConstructor

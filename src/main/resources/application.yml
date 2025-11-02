@@ -19,15 +19,15 @@ spring:
       driver-class-name: org.postgresql.Driver
 
   mail:
-    host: smtp.gmail.com
-    port: 587
+    host: smtp.mail.ru
+    port: 465
     username: ${MAIL_USERNAME}
     password: ${MAIL_PASSWORD}
     properties:
       mail:
         smtp:
           auth: true
-          starttls:
+          ssl:
             enable: true
   jpa:
     hibernate:
@@ -44,6 +44,9 @@ spring:
   sql:
     init:
       mode: always
+
+jwt:
+  secret: ${JWT_SECRET:mysupersecretkeymysupersecretkeymysupersecretkey}
 
 app:
   confirmation:

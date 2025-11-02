@@ -1,10 +1,10 @@
 package com.Sunrise.JWT;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -16,15 +16,7 @@ import java.util.List;
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
-    // Публичные endpoints которые не требуют JWT
-    private final List<String> excludedPaths = List.of(
-        "/app/auth/register",
-        "/app/auth/login",
-        "/app/actions/status"
-    );
+    private final List<String> excludedPaths = com.Sunrise.Configurations.PublicEndpoints.ENDPOINTS; // Публичные endpoints которые не требуют JWT
 
     public JwtFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
@@ -98,16 +90,6 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
-    }
-
-    private String getTokenFromRequest(HttpServletRequest request) {
-
-        String bearer = request.getHeader("Authorization");
-
-        if (bearer != null && bearer.startsWith("Bearer ")) {
-            return bearer.substring(7);
-        }
-        return null;
     }
 
     private void sendErrorResponse(HttpServletResponse response, int statusCode, String errorCode) throws IOException {

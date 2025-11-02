@@ -1,11 +1,10 @@
 package com.Sunrise.Repositories;
 
-import com.Sunrise.DTO.InsertUserResult;
-import com.Sunrise.DTO.UserDTO;
+import com.Sunrise.DTO.DB.InsertUserResult;
+import com.Sunrise.DTO.ServiceAndController.UserDTO;
 import com.Sunrise.Entities.User;
 
 import org.springframework.data.domain.Pageable;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -21,7 +20,7 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    @Query("SELECT new com.Sunrise.DTO.UserDTO(u.username, u.name) FROM User u WHERE u.username ILIKE CONCAT('%', :prefix, '%') AND u.enabled = true AND u.is_deleted = false ORDER BY u.created_at DESC")
+    @Query("SELECT new com.Sunrise.DTO.ServiceAndController.UserDTO(u.username, u.name) FROM User u WHERE u.username ILIKE CONCAT('%', :prefix, '%') AND u.enabled = true AND u.is_deleted = false ORDER BY u.created_at DESC")
     List<UserDTO> findFilteredUsers(@Param("prefix") String prefix, Pageable pageable);
 
     @Query("SELECT u FROM User u WHERE u.username = :username AND u.enabled = TRUE AND u.is_deleted = FALSE")

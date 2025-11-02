@@ -1,41 +1,45 @@
 package com.Sunrise.Services;
 
-import com.Sunrise.DTO.InsertUserResult;
+import com.Sunrise.DTO.DB.InsertUserResult;
+import com.Sunrise.DTO.ServiceAndController.TokenConfirmationResult;
+import com.Sunrise.DTO.ServiceAndController.UserInsertOperationResult;
 import com.Sunrise.Entities.User;
-import com.Sunrise.Entities.VerificationToken;
 import com.Sunrise.Repositories.LoginHistoryRepository;
 import com.Sunrise.Repositories.UserRepository;
+import com.Sunrise.Repositories.VerificationTokenRepository;
+
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @Transactional
 public class AuthService {
 
-    public record OperationResult(boolean success, String error, String token) {}
+    private final UserRepository userRepository;
+    private final LoginHistoryRepository loginHistoryRepository;
+    private final VerificationTokenRepository verificationTokenRepository;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private LoginHistoryRepository loginHistoryRepository;
+    public AuthService(UserRepository userRepository, LoginHistoryRepository loginHistoryRepository, VerificationTokenRepository verificationTokenRepository){
+        this.userRepository = userRepository;
+        this.loginHistoryRepository = loginHistoryRepository;
+        this.verificationTokenRepository = verificationTokenRepository;
+    }
 
-    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
-    public OperationResult registerUser(String username, String email, String name, String password) {
+    public UserInsertOperationResult registerUser(String username, String name, String email, String password) {
 
         InsertUserResult result = userRepository.insertUserIfNotExists(username, name, email, passwordEncoder.encode(password));
 
-        return new OperationResult(result.getSuccess(), result.getErrorText(), result.getGeneratedToken());
+        return new UserInsertOperationResult(result.getSuccess(), result.getErrorText(), result.getGeneratedToken());
     }
-
-    public Boolean authenticateUser(String username, String password, HttpServletRequest httpRequest) {
+    @Transactional
+    public boolean authenticateUser(String username, String password, HttpServletRequest httpRequest) {
         Optional<User> userOpt = userRepository.findByUsername(username);
 
         String ipAddress = extractClientIp(httpRequest);
@@ -52,6 +56,25 @@ public class AuthService {
         }
 
         return false;
+    }
+    @Transactional
+    public TokenConfirmationResult confirmToken(String type, String token) {
+
+        var result = switch (type) {
+            case "email_confirmation" -> verificationTokenRepository.confirmUserByToken(token);
+            default -> null;
+        };
+
+        if(result == null)
+            return new TokenConfirmationResult(false, "Not valid type of token");
+
+        boolean success = result.getSuccess();
+
+        String message = success
+            ? type + " Token was successfully confirmed!!!"
+            : result.getErrorText();
+
+        return new TokenConfirmationResult(success, message);
     }
 
     private String extractClientIp(HttpServletRequest request) {

@@ -1,4 +1,4 @@
-package com.Sunrise.DTO;
+package com.Sunrise.DTO.ServiceAndController;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
