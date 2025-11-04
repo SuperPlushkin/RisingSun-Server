@@ -24,4 +24,4 @@ Thumbs.db
 .env
 *.key
 *.cert
-*.sql
+init.sql
