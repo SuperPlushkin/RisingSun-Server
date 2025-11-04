@@ -32,6 +32,7 @@ public class AuthService {
         this.verificationTokenRepository = verificationTokenRepository;
     }
 
+    @Transactional
     public UserInsertOperationResult registerUser(String username, String name, String email, String password) {
 
         InsertUserResult result = userRepository.insertUserIfNotExists(username, name, email, passwordEncoder.encode(password));
