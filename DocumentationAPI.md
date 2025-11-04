@@ -16,7 +16,8 @@ POST /auth/register
 {
   "username": "SuperPlushkin",
   "password": "123456Au", // Исправленно специально для Великого Ивана Дунаева
-  "name": "Kirill"
+  "name": "Kirill",
+  "email": "ya.krutoj@gmail.com"
 }
 
 # 2. Авторизация
@@ -45,7 +46,8 @@ Authorization: Bearer <ваш_токен>
 {
   "username": "string",
   "password": "string",
-  "name": "string"
+  "name": "string",
+  "email": "string"
 }
 ```
 
@@ -54,7 +56,8 @@ Authorization: Bearer <ваш_токен>
 {
   "username": "SuperPlushkin",
   "password": "123456",
-  "name": "Kirill"
+  "name": "Kirill",
+  "email": "ya.krutoj@gmail.com"
 }
 ```
 
@@ -70,7 +73,8 @@ User registered successfully
   "errors": {
     "username": "Username must be between 4 and 30 characters",
     "password": "Password must be at least 6 characters",
-    "name": "Name must be between 4 and 30 characters"
+    "name": "Name must be between 4 and 30 characters",
+    "email": "Not valid email"
   }
 }
 ```
