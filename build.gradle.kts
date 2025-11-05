@@ -32,7 +32,34 @@ dependencies {
     compileOnly("org.projectlombok:lombok:1.18.30")
     annotationProcessor("org.projectlombok:lombok:1.18.30")
 
-    implementation("org.postgresql:postgresql")
+    runtimeOnly("org.postgresql:postgresql")
+}
+
+tasks.named<org.springframework.boot.gradle.tasks.run.BootRun>("bootRun") {
+    // Эта строка гарантирует, что профиль "local" будет активирован в процессе приложения, запущенном задачей bootRun
+    systemProperty("spring.profiles.active", "local")
+
+    doFirst {
+        // Создаем Map, куда будем загружать переменные
+        val envMap = mutableMapOf<String, String>()
+
+        // Читаем каждую строку из .env
+        File(".env").readLines().forEach { line ->
+            // Пропускаем комментарии и пустые строки
+            if (line.isNotEmpty() && !line.startsWith("#")) {
+                val parts = line.split("=", limit = 2)
+                if (parts.size == 2) {
+                    // Очищаем ключ и значение от лишних символов и кавычек
+                    val key = parts[0].trim()
+                    // Убираем потенциальные кавычки, которые могут быть в .env
+                    val value = parts[1].trim().trim('"', '\'')
+                    envMap[key] = value
+                }
+            }
+        }
+        // Добавляем загруженные переменные в окружение процесса bootRun
+        environment(envMap)
+    }
 }
 
 // Отключение ошибок

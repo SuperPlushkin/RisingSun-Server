@@ -20,8 +20,8 @@ public interface VerificationTokenRepository extends JpaRepository<VerificationT
     @Query(value = "SELECT * FROM verification_tokens v WHERE v.token = :token", nativeQuery = true)
     Optional<VerificationToken> findByToken(@Param("token") String token);
 
-    @Transactional
     @Modifying
-    @Query("DELETE FROM verification_tokens t WHERE t.expiry_date < :time")
-    int deleteByExpiryDateBefore(@Param("time") LocalDateTime time);
+    @Transactional
+    @Query(value = "DELETE FROM verification_tokens t WHERE t.expiry_date < :dateTime", nativeQuery = true)
+    int deleteByExpiryDateBefore(@Param("dateTime") LocalDateTime time);
 }

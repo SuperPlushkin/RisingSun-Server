@@ -1,11 +1,12 @@
+# docker-compose.yml
 services:
   postgres:
     image: postgres:17
     container_name: sunrise-postgres
     environment:
-      POSTGRES_DB: messenger_db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_LOCAL_NAME}
+      POSTGRES_USER: ${DB_LOCAL_USER}
+      POSTGRES_PASSWORD: ${DB_LOCAL_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
@@ -26,27 +27,24 @@ services:
       context: .
     container_name: sunrise-app
     environment:
-
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/messenger_db
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/${DB_LOCAL_NAME}
+      SPRING_DATASOURCE_USERNAME: ${DB_LOCAL_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_LOCAL_PASSWORD}
       SPRING_JPA_HIBERNATE_DDL_AUTO: validate
-      SPRING_PROFILES_ACTIVE: docker,prod
+      SPRING_PROFILES_ACTIVE: docker-all-stack
+      BASE_URL: http://${IP_SERVER}:${PORT_SERVER}/app
 
       LOGGING_LEVEL_APP: INFO
       LOGGING_LEVEL_ORG_HIBERNATE_SQL: WARN
 
       APP_MESSENGER_MAX_MESSAGE_SIZE: 5000
-      APP_MESSENGER_ALLOW_ANONYMOUS: false
-
-      BASE_URL: http://${IP_SERVER}:${PORT_SERVER}/app
 
       MAIL_USERNAME: ${MAIL_USERNAME}
       MAIL_PASSWORD: ${MAIL_PASSWORD}
 
       JWT_SECRET: ${JWT_SECRET}
     ports:
-      - "8081:8080"
+      - "8081:8081"
     depends_on:
       postgres:
         condition: service_healthy
