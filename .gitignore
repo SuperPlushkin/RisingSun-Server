@@ -25,3 +25,4 @@ Thumbs.db
 *.key
 *.cert
 init.sql
+grants.sql
