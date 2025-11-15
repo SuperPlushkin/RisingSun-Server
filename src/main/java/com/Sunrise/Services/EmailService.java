@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class EmailService {
 
+    @Value("${app.confirmation.mail-address}")
+    private String mailAddress;
     @Value("${app.confirmation.base-url}")
     private String baseUrl;
 
@@ -22,7 +24,7 @@ public class EmailService {
     public void sendVerificationEmail(String to, String token) {
 
         SimpleMailMessage email = new SimpleMailMessage();
-        email.setFrom("superplushkin@mail.ru");
+        email.setFrom(mailAddress);
         email.setTo(to);
         email.setSubject("Подтверждение регистрации на Sunrise Messenger");
         email.setText(String.format(

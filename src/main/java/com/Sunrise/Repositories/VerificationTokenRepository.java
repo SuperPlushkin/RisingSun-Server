@@ -1,6 +1,6 @@
 package com.Sunrise.Repositories;
 
-import com.Sunrise.DTO.DB.TokenConfirmationResult;
+import com.Sunrise.DTO.DBResults.TokenConfirmationResult;
 import com.Sunrise.Entities.VerificationToken;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,11 +17,11 @@ public interface VerificationTokenRepository extends JpaRepository<VerificationT
     @Query(value = "SELECT * FROM confirm_user_by_token(:token)", nativeQuery = true)
     TokenConfirmationResult confirmUserByToken(@Param("token") String token);
 
-    @Query(value = "SELECT * FROM verification_tokens v WHERE v.token = :token", nativeQuery = true)
+    @Query(value = "SELECT * FROM verification_token WHERE token = :token", nativeQuery = true)
     Optional<VerificationToken> findByToken(@Param("token") String token);
 
     @Modifying
     @Transactional
-    @Query(value = "DELETE FROM verification_tokens t WHERE t.expiry_date < :dateTime", nativeQuery = true)
+    @Query(value = "DELETE FROM verification_token WHERE expiry_date < :dateTime", nativeQuery = true)
     int deleteByExpiryDateBefore(@Param("dateTime") LocalDateTime time);
 }

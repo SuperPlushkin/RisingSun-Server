@@ -1,7 +1,7 @@
 package com.Sunrise.Repositories;
 
-import com.Sunrise.DTO.DB.InsertUserResult;
-import com.Sunrise.DTO.ServiceAndController.UserDTO;
+import com.Sunrise.DTO.DBResults.InsertUserResult;
+import com.Sunrise.DTO.ServiceResults.UserDTO;
 import com.Sunrise.Entities.User;
 
 import org.springframework.data.domain.Pageable;
@@ -20,17 +20,19 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    @Query("SELECT new com.Sunrise.DTO.ServiceAndController.UserDTO(u.username, u.name) FROM User u WHERE u.username ILIKE CONCAT('%', :prefix, '%') AND u.enabled = true AND u.is_deleted = false ORDER BY u.created_at DESC")
+    @Query("SELECT new com.Sunrise.DTO.ServiceResults.UserDTO(u.id, u.username, u.name) " +
+            "FROM User u WHERE LOWER(u.username) LIKE LOWER(CONCAT('%', :prefix, '%')) " +
+            "AND u.enabled = true AND u.isDeleted = false")
     List<UserDTO> findFilteredUsers(@Param("prefix") String prefix, Pageable pageable);
 
-    @Query("SELECT u FROM User u WHERE u.username = :username AND u.enabled = TRUE AND u.is_deleted = FALSE")
+    @Query(value = "SELECT * FROM users WHERE username = :username AND enabled = TRUE AND is_deleted = FALSE", nativeQuery = true)
     Optional<User> findByUsername(@Param("username") String username);
 
-    @Query(value = "SELECT success, error_text, generated_token " + "FROM insert_user_if_not_exists(:username, :name, :email, :hash_password)", nativeQuery = true)
+    @Query(value = "SELECT success, error_text, generated_token FROM insert_user_if_not_exists(:username, :name, :email, :hash_password)", nativeQuery = true)
     InsertUserResult insertUserIfNotExists(@Param("username") String username, @Param("name") String name, @Param("email") String email, @Param("hash_password") String hash_password);
 
     @Modifying
     @Transactional
-    @Query("UPDATE User u SET u.last_login = :last_login WHERE u.username = :username")
-    void updateLastLogin(@Param("username") String username, @Param("last_login") LocalDateTime last_login);
+    @Query(value = "UPDATE users SET last_login = :last_login WHERE username = :username", nativeQuery = true)
+    void updateLastLogin(@Param("username") String username, @Param("last_login") LocalDateTime lastLogin);
 }

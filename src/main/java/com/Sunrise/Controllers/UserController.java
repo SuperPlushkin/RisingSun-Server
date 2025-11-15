@@ -1,14 +1,16 @@
 package com.Sunrise.Controllers;
 
-import com.Sunrise.DTO.ServiceAndController.UserDTO;
-import com.Sunrise.DTO.ServiceAndController.UserFilterRequest;
+import com.Sunrise.DTO.ServiceResults.UserDTO;
+import com.Sunrise.DTO.Requests.UserFilterRequest;
 import com.Sunrise.Services.UserService;
 
 import jakarta.validation.Valid;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/app/user")
@@ -21,7 +23,13 @@ public class UserController {
     }
 
     @GetMapping("/getmany")
-    public List<UserDTO> getManyUsers(@Valid @ModelAttribute  UserFilterRequest request) {
-        return userService.getFilteredUsers(request.getLimited(), request.getOffset(), request.getFilter());
+    public ResponseEntity<?> getManyUsers(@Valid @ModelAttribute UserFilterRequest request) {
+
+        var users = userService.getFilteredUsers(request.getLimited(), request.getOffset(), request.getFilter());
+
+        return ResponseEntity.ok(Map.of(
+            "users", users,
+            "count", users.size()
+        ));
     }
 }

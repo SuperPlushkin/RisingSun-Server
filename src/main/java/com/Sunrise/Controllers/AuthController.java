@@ -1,9 +1,9 @@
 package com.Sunrise.Controllers;
 
-import com.Sunrise.DTO.ServiceAndController.LoginRequest;
-import com.Sunrise.DTO.ServiceAndController.RegisterRequest;
-import com.Sunrise.DTO.ServiceAndController.TokenConfirmationResult;
-import com.Sunrise.JWT.JwtUtil;
+import com.Sunrise.DTO.Requests.LoginRequest;
+import com.Sunrise.DTO.Requests.RegisterRequest;
+import com.Sunrise.DTO.ServiceResults.TokenConfirmationResult;
+import com.Sunrise.Subclasses.MyException;
 import com.Sunrise.Services.AuthService;
 import com.Sunrise.Services.EmailService;
 
@@ -19,15 +19,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/app/auth")
 public class AuthController {
 
-    private AuthService authService;
-    private EmailService emailService;
-    private JwtUtil jwtUtil;
-    private BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final AuthService authService;
+    private final EmailService emailService;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public AuthController(AuthService authService, EmailService emailService, JwtUtil jwtUtil){
+    public AuthController(AuthService authService, EmailService emailService){
         this.authService = authService;
         this.emailService = emailService;
-        this.jwtUtil = jwtUtil;
     }
 
     @PostMapping("/register")
@@ -35,12 +33,12 @@ public class AuthController {
 
         var result = authService.registerUser(request.getUsername(), request.getName(), request.getEmail(), request.getPassword());
 
-        if (result.success())
+        if (result.isSuccess())
         {
-            emailService.sendVerificationEmail(request.getEmail(), result.token());
+            emailService.sendVerificationEmail(request.getEmail(), result.getToken());
             return ResponseEntity.ok("User registered successfully. Check your mail to activate your account!!!");
         }
-        else return ResponseEntity.badRequest().body(result.error());
+        else throw new MyException(result.getInfoMessage());
     }
 
     @PostMapping("/login")
@@ -49,12 +47,11 @@ public class AuthController {
         String username = request.getUsername();
         String password = request.getPassword();
 
-        boolean successful_login = authService.authenticateUser(username, password, httpRequest);
+        var jwt_token = authService.authenticateUser(username, password, httpRequest);
 
-        if (successful_login)
+        if (jwt_token.isPresent())
         {
-            String token = jwtUtil.generateToken(username);
-            return ResponseEntity.ok(token);
+            return ResponseEntity.ok(jwt_token.get());
         }
         else return ResponseEntity.badRequest().body("Invalid credentials");
     }

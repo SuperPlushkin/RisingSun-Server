@@ -1,4 +1,4 @@
-package com.Sunrise.Services;
+package com.Sunrise.Subclasses;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -30,7 +30,10 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.badRequest().body(response);
     }
-
+    @ExceptionHandler(MyException.class)
+    public ResponseEntity<String> handleMyExceptionException(MyException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<String> handleNotReadableHttpMessageException(HttpMessageNotReadableException ex) {
         return ResponseEntity.badRequest().body("not readable http message (check the structure)");

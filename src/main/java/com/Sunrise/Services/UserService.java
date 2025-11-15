@@ -1,6 +1,6 @@
 package com.Sunrise.Services;
 
-import com.Sunrise.DTO.ServiceAndController.UserDTO;
+import com.Sunrise.DTO.ServiceResults.UserDTO;
 import com.Sunrise.Repositories.UserRepository;
 
 import org.springframework.data.domain.PageRequest;

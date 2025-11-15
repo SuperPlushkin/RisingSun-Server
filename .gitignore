@@ -26,3 +26,4 @@ Thumbs.db
 *.cert
 init.sql
 grants.sql
+test-chats.sql

@@ -5,6 +5,8 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class JwtUtil {
@@ -15,25 +17,41 @@ public class JwtUtil {
         this.secretKey = secretKey;
     }
 
+    // Существующий метод для обратной совместимости
     public String generateToken(String username) {
+        return generateToken(username, null);
+    }
+
+    // Новый метод с поддержкой userId
+    public String generateToken(String username, Long userId) {
+        Map<String, Object> claims = new HashMap<>();
+        if (userId != null) {
+            claims.put("userId", userId);
+        }
+
         return Jwts.builder()
-            .setSubject(username)
-            .setIssuedAt(new Date())
-            .setExpiration(new Date(System.currentTimeMillis() + expiration))
-            .signWith(secretKey)
-            .compact();
+                .setClaims(claims)
+                .setSubject(username)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                .signWith(secretKey)
+                .compact();
     }
 
     public String extractUsername(String token) {
         return getClaims(token).getSubject();
     }
 
+    // Новый метод для извлечения userId
+    public Long extractUserId(String token) {
+        Claims claims = getClaims(token);
+        return claims.get("userId", Long.class);
+    }
+
     public boolean validateToken(String token, String username) {
-        try
-        {
+        try {
             return username.equals(extractUsername(token)) && !isTokenExpired(token);
-        }
-        catch (JwtException | IllegalArgumentException e) {
+        } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
     }
@@ -44,9 +62,9 @@ public class JwtUtil {
 
     private Claims getClaims(String token) {
         return Jwts.parserBuilder()
-            .setSigningKey(secretKey)
-            .build()
-            .parseClaimsJws(token)
-            .getBody();
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 }

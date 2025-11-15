@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -18,11 +19,19 @@ public class TokenCleanupService {
         this.tokenRepository = tokenRepository;
     }
 
-    @Scheduled(fixedRate = 24 * 60 * 60 * 1000) // каждые 24 часов
+    @Scheduled(initialDelay = 10000, fixedRate = 86400000) // Каждые 24 часа
+    @Transactional
     public void cleanupExpiredTokens() {
-        LocalDateTime now = LocalDateTime.now();
-        int deleted = tokenRepository.deleteByExpiryDateBefore(now);
+        try
+        {
+            LocalDateTime now = LocalDateTime.now();
+            int num = tokenRepository.deleteByExpiryDateBefore(now);
 
-        log.info("Удалено просроченных токенов: {}", deleted);
+            System.out.println("✅ Expired tokens cleanup completed at " + now);
+            System.out.println("Deleted tokens --> " + num);
+        }
+        catch (Exception e) {
+            System.err.println("❌ Error during token cleanup: " + e.getMessage());
+        }
     }
 }

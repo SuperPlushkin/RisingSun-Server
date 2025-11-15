@@ -1,9 +1,10 @@
 package com.Sunrise.Services;
 
-import com.Sunrise.DTO.DB.InsertUserResult;
-import com.Sunrise.DTO.ServiceAndController.TokenConfirmationResult;
-import com.Sunrise.DTO.ServiceAndController.UserInsertOperationResult;
+import com.Sunrise.DTO.DBResults.InsertUserResult;
+import com.Sunrise.DTO.ServiceResults.TokenConfirmationResult;
+import com.Sunrise.DTO.ServiceResults.UserInsertOperationResult;
 import com.Sunrise.Entities.User;
+import com.Sunrise.JWT.JwtUtil;
 import com.Sunrise.Repositories.LoginHistoryRepository;
 import com.Sunrise.Repositories.UserRepository;
 import com.Sunrise.Repositories.VerificationTokenRepository;
@@ -24,12 +25,14 @@ public class AuthService {
     private final UserRepository userRepository;
     private final LoginHistoryRepository loginHistoryRepository;
     private final VerificationTokenRepository verificationTokenRepository;
+    private final JwtUtil jwtUtil;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public AuthService(UserRepository userRepository, LoginHistoryRepository loginHistoryRepository, VerificationTokenRepository verificationTokenRepository){
+    public AuthService(UserRepository userRepository, LoginHistoryRepository loginHistoryRepository, VerificationTokenRepository verificationTokenRepository, JwtUtil jwtUtil){
         this.userRepository = userRepository;
         this.loginHistoryRepository = loginHistoryRepository;
         this.verificationTokenRepository = verificationTokenRepository;
+        this.jwtUtil = jwtUtil;
     }
 
     @Transactional
@@ -40,7 +43,7 @@ public class AuthService {
         return new UserInsertOperationResult(result.getSuccess(), result.getErrorText(), result.getGeneratedToken());
     }
     @Transactional
-    public boolean authenticateUser(String username, String password, HttpServletRequest httpRequest) {
+    public Optional<String> authenticateUser(String username, String password, HttpServletRequest httpRequest) {
         Optional<User> userOpt = userRepository.findByUsername(username);
 
         String ipAddress = extractClientIp(httpRequest);
@@ -52,11 +55,12 @@ public class AuthService {
             if (passwordEncoder.matches(password, user.getHashPassword())) {
                 userRepository.updateLastLogin(username, LocalDateTime.now());
                 loginHistoryRepository.addLoginHistory(user.getId(), ipAddress, userAgent);
-                return true;
+
+                return Optional.of(jwtUtil.generateToken(username, user.getId()));
             }
         }
 
-        return false;
+        return Optional.empty();
     }
     @Transactional
     public TokenConfirmationResult confirmToken(String type, String token) {
@@ -66,16 +70,17 @@ public class AuthService {
             default -> null;
         };
 
-        if(result == null)
-            return new TokenConfirmationResult(false, "Not valid type of token");
+        if(result != null)
+        {
+            boolean success = result.getSuccess();
 
-        boolean success = result.getSuccess();
+            String message = success
+                ? type + " Token was successfully confirmed!!!"
+                : result.getErrorText();
 
-        String message = success
-            ? type + " Token was successfully confirmed!!!"
-            : result.getErrorText();
-
-        return new TokenConfirmationResult(success, message);
+            return new TokenConfirmationResult(success, message);
+        }
+        else return new TokenConfirmationResult(false, "Not valid type of token");
     }
 
     private String extractClientIp(HttpServletRequest request) {

@@ -3,7 +3,6 @@ server:
   port: 8081
 
 spring:
-
   config:
     activate:
       on-profile: docker-all-stack, docker-only-app, local
@@ -53,6 +52,7 @@ jwt:
 
 app:
   confirmation:
+    mail_address: ${MAIL_USERNAME}
     base-url: ${SPRING_BASE_URL:${BASE_URL}}
   messenger:
     max-message-size: ${APP_MESSENGER_MAX_MESSAGE_SIZE:5000}

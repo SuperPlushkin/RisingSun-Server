@@ -4,19 +4,20 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
-    private final List<String> excludedPaths = com.Sunrise.Configurations.PublicEndpoints.ENDPOINTS; // Публичные endpoints которые не требуют JWT
+    private final List<String> excludedPaths = com.Sunrise.Configurations.PublicEndpoints.ENDPOINTS;
 
     public JwtFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
@@ -35,56 +36,53 @@ public class JwtFilter extends OncePerRequestFilter {
 
         final String authorizationHeader = request.getHeader("Authorization");
 
-        // Проверяем наличие заголовка Authorization
-        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer "))
-        {
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
             sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "MISSING_TOKEN");
             return;
         }
 
         String username = null;
+        Long userId = null;
         String jwt = null;
 
-        try
-        {
+        try {
             jwt = authorizationHeader.substring(7);
 
-            if (jwt.trim().isEmpty())
-            {
+            if (jwt.trim().isEmpty()) {
                 sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "EMPTY_TOKEN");
                 return;
             }
 
             username = jwtUtil.extractUsername(jwt);
+            userId = jwtUtil.extractUserId(jwt);
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "INVALID_TOKEN");
             return;
         }
 
-        // Проверяем что username извлечен
         if (username == null || username.trim().isEmpty()) {
             sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "INVALID_TOKEN_PAYLOAD");
             return;
         }
 
-        // Проверяем валидность токена
-        if (!jwtUtil.validateToken(jwt, username))
-        {
+        if (!jwtUtil.validateToken(jwt, username)) {
             sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "TOKEN_VALIDATION_FAILED");
             return;
         }
 
-        // Если все проверки пройдены, устанавливаем аутентификацию
         try
         {
-            var auth = new UsernamePasswordAuthenticationToken(username, null, List.of());
-            auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(username, null, List.of());
+
+            Map<String, Object> details = new HashMap<>();
+            details.put("userId", userId);
+            details.put("webAuthenticationDetails", new WebAuthenticationDetailsSource().buildDetails(request));
+            auth.setDetails(details);
+
             SecurityContextHolder.getContext().setAuthentication(auth);
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             sendErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "AUTHENTICATION_ERROR");
             return;
         }
