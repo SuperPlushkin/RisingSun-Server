@@ -4,5 +4,5 @@ package com.Sunrise.DTO.ServiceResults;
 @lombok.AllArgsConstructor
 public abstract class ServiceResult {
     private boolean success;
-    private String infoMessage;
+    private String errorMessage;
 }

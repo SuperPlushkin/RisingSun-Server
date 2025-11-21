@@ -6,6 +6,8 @@ import com.Sunrise.Services.UserService;
 
 import jakarta.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,7 +18,9 @@ import java.util.Map;
 @RequestMapping("/app/user")
 public class UserController {
 
-    private UserService userService;
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
+
+    private final UserService userService;
 
     public UserController(UserService userService){
         this.userService = userService;
@@ -25,11 +29,21 @@ public class UserController {
     @GetMapping("/getmany")
     public ResponseEntity<?> getManyUsers(@Valid @ModelAttribute UserFilterRequest request) {
 
-        var users = userService.getFilteredUsers(request.getLimited(), request.getOffset(), request.getFilter());
+        var result = userService.getFilteredUsers(request.getLimited(), request.getOffset(), request.getFilter());
 
-        return ResponseEntity.ok(Map.of(
-            "users", users,
-            "count", users.size()
-        ));
+        if (result.isSuccess())
+        {
+            List<UserDTO> users = result.getUsers();
+
+            return ResponseEntity.ok(Map.of(
+                "users", users,
+                "count", users.size()
+            ));
+        }
+        else
+        {
+            log.warn(result.getErrorMessage());
+            return ResponseEntity.badRequest().body(result.getErrorMessage());
+        }
     }
 }

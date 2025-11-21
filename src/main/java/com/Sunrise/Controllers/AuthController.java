@@ -2,14 +2,15 @@ package com.Sunrise.Controllers;
 
 import com.Sunrise.DTO.Requests.LoginRequest;
 import com.Sunrise.DTO.Requests.RegisterRequest;
-import com.Sunrise.DTO.ServiceResults.TokenConfirmationResult;
-import com.Sunrise.Subclasses.MyException;
 import com.Sunrise.Services.AuthService;
 import com.Sunrise.Services.EmailService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 
+import jakarta.validation.constraints.Size;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -19,13 +20,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/app/auth")
 public class AuthController {
 
+    private static final Logger log = LoggerFactory.getLogger(AuthController.class);
+
     private final AuthService authService;
-    private final EmailService emailService;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public AuthController(AuthService authService, EmailService emailService){
+    public AuthController(AuthService authService){
         this.authService = authService;
-        this.emailService = emailService;
     }
 
     @PostMapping("/register")
@@ -35,10 +36,14 @@ public class AuthController {
 
         if (result.isSuccess())
         {
-            emailService.sendVerificationEmail(request.getEmail(), result.getToken());
+            log.info("User registered successfully --> {}", request.getUsername());
             return ResponseEntity.ok("User registered successfully. Check your mail to activate your account!!!");
         }
-        else throw new MyException(result.getInfoMessage());
+        else
+        {
+            log.warn(result.getErrorMessage());
+            return ResponseEntity.badRequest().body(result.getErrorMessage());
+        }
     }
 
     @PostMapping("/login")
@@ -47,23 +52,28 @@ public class AuthController {
         String username = request.getUsername();
         String password = request.getPassword();
 
-        var jwt_token = authService.authenticateUser(username, password, httpRequest);
+        var result = authService.authenticateUser(username, password, httpRequest);
 
-        if (jwt_token.isPresent())
+        if (result.isSuccess())
         {
-            return ResponseEntity.ok(jwt_token.get());
+            log.info("User login successfully --> {}", request.getUsername());
+            return ResponseEntity.ok(result.getJwtToken());
         }
-        else return ResponseEntity.badRequest().body("Invalid credentials");
+        else
+        {
+            log.warn(result.getErrorMessage());
+            return ResponseEntity.badRequest().body(result.getErrorMessage());
+        }
     }
 
     @GetMapping(value = "/confirm", produces = "text/html; charset=UTF-8")
-    public String confirmEmail(@RequestParam("type") String type, @RequestParam("token") String token) {
+    public String confirmEmail(@RequestParam("type") String type, @RequestParam("token") @Size(min = 64, max = 64, message = "Token must be exactly 64 characters") String token) {
 
-        TokenConfirmationResult result = authService.confirmToken(type, token);
+        var result = authService.confirmToken(type, token);
 
         String status = result.isSuccess()
-                ? "<h3 style='color:green'>✅ Успех!</h3>"
-                : "<h3 style='color:red'>❌ Ошибка</h3>";
+            ? "<h3 style='color:green'>✅ Успех!</h3>"
+            : "<h3 style='color:red'>❌ Ошибка</h3>";
 
         return """
            <!DOCTYPE html>

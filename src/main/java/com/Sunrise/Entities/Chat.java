@@ -8,27 +8,39 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "chats")
+@lombok.Getter
+@lombok.Setter
+@lombok.NoArgsConstructor
+@lombok.AllArgsConstructor
 public class Chat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    protected Long id;
 
-    @Column(length = 50, nullable = false)
+    @Column(name = "name", length = 50)
     @Size(min = 4, max = 50)
     @Pattern(
-        regexp = "^[a-zA-Z0-9 _-]+$",
+        regexp = "^[a-zA-Z0-9а-яА-Я _-]+$",
         message = "Chat name can contain letters, digits, spaces, underscores, and hyphens"
     )
-    private String name;
+    protected String name;
 
-    @ManyToOne
-    @JoinColumn(name = "created_by", nullable = false)
-    private User created_by;
+    @Column(name = "created_by", nullable = false)
+    protected Long createdBy;
 
-    @Column(nullable = false)
-    private LocalDateTime created_at = LocalDateTime.now();
-    @Column(nullable = false)
-    private Boolean is_group = false;
-    @Column(nullable = false)
-    private Boolean is_deleted = false;
+    @Column(name = "created_at", nullable = false, updatable = false)
+    protected LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(name = "is_group", nullable = false)
+    protected Boolean isGroup = false;
+
+    @Column(name = "is_deleted", nullable = false)
+    protected Boolean isDeleted = false;
+
+    public static Chat createPersonalChat(Long id, Long createdBy) {
+        return new Chat(id, null, createdBy, LocalDateTime.now(), false, false);
+    }
+    public static Chat createGroupChat(Long id, String name, Long createdBy) {
+        return new Chat(id, name, createdBy, LocalDateTime.now(), true, false);
+    }
 }

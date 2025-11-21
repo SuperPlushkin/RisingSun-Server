@@ -2,7 +2,6 @@ package com.Sunrise.Entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -20,13 +19,15 @@ public class Message {
     @JoinColumn(name = "chat_id", nullable = false)
     private Chat chat;
 
-    @Column(nullable = false)
+    @Column(name = "text", nullable = false)
     private String text;
-    @Column(nullable = false)
+    @Column(name = "sent_at", nullable = false)
     private LocalDateTime sent_at = LocalDateTime.now();
-    @Column(nullable = false)
+
+    @Column(name = "read_count", nullable = false)
     @Min(0)
-    private Long read_count = 0L;
-    @Column(nullable = false)
-    private Boolean is_deleted = false;
+    private Long readCount = 0L;
+
+    @Column(name = "hidden_by_admin", nullable = false)
+    private Boolean hiddenByAdmin = false;
 }

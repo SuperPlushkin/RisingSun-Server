@@ -1,6 +1,5 @@
 package com.Sunrise.Repositories;
 
-import com.Sunrise.DTO.DBResults.InsertUserResult;
 import com.Sunrise.DTO.ServiceResults.UserDTO;
 import com.Sunrise.Entities.User;
 
@@ -12,7 +11,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -22,17 +20,31 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT new com.Sunrise.DTO.ServiceResults.UserDTO(u.id, u.username, u.name) " +
             "FROM User u WHERE LOWER(u.username) LIKE LOWER(CONCAT('%', :prefix, '%')) " +
-            "AND u.enabled = true AND u.isDeleted = false")
+            "AND u.isEnabled = true AND u.isDeleted = false")
     List<UserDTO> findFilteredUsers(@Param("prefix") String prefix, Pageable pageable);
 
-    @Query(value = "SELECT * FROM users WHERE username = :username AND enabled = TRUE AND is_deleted = FALSE", nativeQuery = true)
+    @Query("SELECT u FROM User u WHERE u.username = :username AND u.isEnabled = true AND u.isDeleted = false")
     Optional<User> findByUsername(@Param("username") String username);
 
-    @Query(value = "SELECT success, error_text, generated_token FROM insert_user_if_not_exists(:username, :name, :email, :hash_password)", nativeQuery = true)
-    InsertUserResult insertUserIfNotExists(@Param("username") String username, @Param("name") String name, @Param("email") String email, @Param("hash_password") String hash_password);
+    @Query(value = "SELECT EXISTS(" +
+            "SELECT 1 FROM chat_members " +
+            "WHERE chat_id = :chatId AND user_id = :userId AND is_deleted = FALSE" +
+            ")", nativeQuery = true)
+    Boolean isChatMember(@Param("chatId") Long chatId, @Param("userId") Long userId);
+
+    @Query("SELECT COUNT(u) > 0 FROM User u WHERE u.username = :username AND u.isDeleted = false")
+    boolean existsByUsername(@Param("username") String username);
+
+    @Query("SELECT COUNT(u) > 0 FROM User u WHERE u.email = :email AND u.isDeleted = false")
+    boolean existsByEmail(@Param("email") String email);
 
     @Modifying
     @Transactional
-    @Query(value = "UPDATE users SET last_login = :last_login WHERE username = :username", nativeQuery = true)
-    void updateLastLogin(@Param("username") String username, @Param("last_login") LocalDateTime lastLogin);
+    @Query("UPDATE User u SET u.lastLogin = :lastLogin WHERE u.username = :username")
+    void updateLastLogin(@Param("username") String username, @Param("lastLogin") LocalDateTime lastLogin);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE User u SET u.isEnabled = true WHERE u.id = :userId")
+    void enableUser(@Param("userId") Long userId);
 }

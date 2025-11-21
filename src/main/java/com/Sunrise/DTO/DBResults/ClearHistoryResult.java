@@ -1,5 +1,5 @@
 package com.Sunrise.DTO.DBResults;
 
-public interface ClearHistoryResult extends IDBResult {
+public interface ClearHistoryResult {
     Integer getAffectedCount();
 }

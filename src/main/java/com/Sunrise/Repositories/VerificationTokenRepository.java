@@ -1,6 +1,5 @@
 package com.Sunrise.Repositories;
 
-import com.Sunrise.DTO.DBResults.TokenConfirmationResult;
 import com.Sunrise.Entities.VerificationToken;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,11 +13,13 @@ import java.util.Optional;
 
 public interface VerificationTokenRepository extends JpaRepository<VerificationToken, Long> {
 
-    @Query(value = "SELECT * FROM confirm_user_by_token(:token)", nativeQuery = true)
-    TokenConfirmationResult confirmUserByToken(@Param("token") String token);
-
     @Query(value = "SELECT * FROM verification_token WHERE token = :token", nativeQuery = true)
     Optional<VerificationToken> findByToken(@Param("token") String token);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM VerificationToken vt WHERE vt.token = :token")
+    void deleteByToken(@Param("token") String token);
 
     @Modifying
     @Transactional

@@ -4,8 +4,8 @@ package com.Sunrise.DTO.ServiceResults;
 public class HistoryOperationResult extends ServiceResult {
     private final Integer affectedMessages;
 
-    public HistoryOperationResult(boolean success, String infoMessage, Integer affectedMessages) {
-        super(success, infoMessage);
+    public HistoryOperationResult(boolean success, String errorMessage, Integer affectedMessages) {
+        super(success, errorMessage);
         this.affectedMessages = affectedMessages;
     }
 }

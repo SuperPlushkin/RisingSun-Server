@@ -5,23 +5,27 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "chat_members")
+@lombok.Getter
+@lombok.Setter
+@lombok.NoArgsConstructor
+@lombok.AllArgsConstructor
 public class ChatMember {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "chat_id", nullable = false)
-    private Chat chat;
+    @Column(name = "chat_id", nullable = false)
+    private Long chatId;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
 
-    @Column(nullable = false)
-    private LocalDateTime joined_at = LocalDateTime.now();
-    @Column(nullable = false)
-    private Boolean is_admin = false;
-    @Column(nullable = false)
-    private Boolean is_deleted = false;
+    @Column(name = "joined_at", nullable = false)
+    private LocalDateTime joinedAt = LocalDateTime.now();
+
+    @Column(name = "is_admin", nullable = false)
+    private Boolean isAdmin = false;
+
+    @Column(name = "is_deleted",nullable = false)
+    private Boolean isDeleted = false;
 }
